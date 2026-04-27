@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DSG Operations System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-height:100vh}
+:root{--navy:#1B2A4A;--teal:#028090;--silver:#C0C8D0;--border:#E2E8F0;--green:#10B981;--amber:#F59E0B;--orange:#F97316;--red:#EF4444;--gray:#6B7280}
+/* NAV */
+.nav{background:var(--navy);height:56px;display:flex;align-items:center;padding:0 20px;gap:4px;position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(0,0,0,0.15);overflow-x:auto}
+.nav-logo{display:flex;align-items:center;gap:10px;margin-right:20px;flex-shrink:0}
+.nav-logo-box{width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.nav-logo-text{color:white;font-size:13px;font-weight:700;letter-spacing:.5px;white-space:nowrap}
+.nav-btn{background:transparent;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.6);font-size:12px;font-weight:400;padding:6px 12px;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all .15s;border-radius:6px 6px 0 0}
+.nav-btn:hover{color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.06)}
+.nav-btn.active{color:white;font-weight:600;border-bottom-color:var(--teal);background:rgba(255,255,255,0.1)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.nav-date{color:rgba(255,255,255,0.4);font-size:11px}
+.nav-bell{position:relative;cursor:pointer;color:rgba(255,255,255,0.7);font-size:18px}
+.nav-bell-badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:white;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.nav-user{background:rgba(255,255,255,0.1);border-radius:20px;padding:4px 12px;display:flex;align-items:center;gap:8px}
+.nav-user-name{color:white;font-size:12px;font-weight:500}
+.nav-user-role{color:rgba(255,255,255,0.4);font-size:10px}
+/* PAGES */
+.page{display:none;padding:24px;max-width:1400px;margin:0 auto;animation:fadeIn .25s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* LOGIN */
+.login-wrap{min-height:100vh;background:linear-gradient(135deg,#0f1e38,#1B2A4A,#0d3d47);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.login-card{background:white;border-radius:16px;padding:36px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo-icon{width:52px;height:52px;margin:0 auto 12px;display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.login-logo-icon div{border-radius:4px}
+.login-title{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--gray);margin-bottom:28px}
+.form-label{font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:5px}
+.form-input{width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:16px;transition:border-color .2s}
+.form-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(2,128,144,.1)}
+.forgot{font-size:12px;color:var(--teal);cursor:pointer;float:right;margin-top:-12px;margin-bottom:16px}
+.btn-login{width:100%;background:var(--navy);color:white;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+.btn-login:hover{background:#243659}
+.login-team-photo{margin-top:28px;border-radius:12px;overflow:hidden;height:120px;width:100%;max-width:420px}
+.login-team-photo img{width:100%;height:100%;object-fit:cover;opacity:.65}
+.login-footer{margin-top:12px;color:rgba(255,255,255,.3);font-size:11px;text-align:center}
+/* CARDS */
+.card{background:white;border:1px solid var(--border);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card-pad{padding:20px}
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+/* STAT CARDS */
+.stat-card{background:white;border:1px solid var(--border);border-radius:12px;padding:20px}
+.stat-label{font-size:11px;color:var(--gray);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.stat-value{font-size:26px;font-weight:700;color:var(--navy);line-height:1}
+.stat-trend{font-size:11px;margin-top:6px}
+.trend-up{color:#15803D}
+.trend-down{color:#B91C1C}
+/* SECTION HEADER */
+.section-hdr{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.8px;padding-bottom:8px;border-bottom:2px solid var(--navy);margin-bottom:14px}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:.2px}
+.badge-live{background:#DCFCE7;color:#15803D}
+.badge-build{background:var(--navy);color:white}
+.badge-onboarding{background:#DBEAFE;color:#1D4ED8}
+.badge-intake{background:#F1F5F9;color:#475569}
+.badge-teal{background:#CCFBF1;color:#0F766E}
+.badge-contract{background:#E0F2FE;color:#0369A1}
+.badge-closing{background:#DCFCE7;color:#15803D}
+.badge-paid{background:#DCFCE7;color:#15803D}
+.badge-closed{background:#F0FDF4;color:#15803D}
+.badge-active{background:#CCFBF1;color:#0F766E}
+.badge-rental{background:#FEF3C7;color:#92400E}
+.badge-warn{background:#FEF3C7;color:#92400E}
+/* DOTS */
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot-green{background:var(--green)}
+.dot-yellow{background:var(--amber)}
+.dot-orange{background:var(--orange)}
+.dot-red{background:var(--red)}
+/* PROGRESS */
+.prog-wrap{background:#E8EDF2;border-radius:99px;overflow:hidden}
+.prog-fill{background:linear-gradient(90deg,var(--navy),var(--teal));border-radius:99px;transition:width .5s ease}
+/* AVATAR */
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:white;flex-shrink:0}
+/* ROWS */
+.list-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F8FAFC}
+.list-row:last-child{border-bottom:none}
+/* PROPERTY CARDS */
+.prop-card{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s}
+.prop-card:hover{box-shadow:0 8px 24px rgba(27,42,74,.12);transform:translateY(-2px)}
+.prop-img{width:100%;height:185px;object-fit:cover}
+.prop-body{padding:14px 16px}
+.prop-address{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.prop-neighborhood{font-size:11px;color:#94A3B8;margin-bottom:8px}
+.prop-price{font-size:19px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.prop-comm{font-size:11px;color:#64748B;margin-bottom:10px}
+/* BUTTONS */
+.btn{border:1px solid var(--border);background:white;color:var(--navy);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn:hover{border-color:var(--navy);background:#F8FAFC}
+.btn-navy{background:var(--navy);color:white;border-color:var(--navy)}
+.btn-navy:hover{background:#243659;border-color:#243659}
+.btn-teal{background:var(--teal);color:white;border-color:var(--teal)}
+.btn-teal:hover{background:#03A0B0;border-color:#03A0B0}
+.btn-sm{padding:5px 12px;font-size:12px}
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{background:var(--navy);color:white;padding:10px 14px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap}
+.data-table th:first-child{border-radius:8px 0 0 0}
+.data-table th:last-child{border-radius:0 8px 0 0}
+.data-table td{padding:11px 14px;font-size:13px;border-bottom:1px solid var(--border)}
+.data-table tr:hover td{background:#FAFAFA}
+/* REQUIREMENTS DARK CARD */
+.req-card{background:var(--navy);border-radius:12px;padding:16px}
+.req-title{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.7px;margin-bottom:12px}
+.req-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.req-row:last-child{border-bottom:none}
+.req-check{width:16px;height:16px;border-radius:4px;border:2px solid rgba(255,255,255,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.req-check.done{background:var(--teal);border-color:var(--teal)}
+.req-label{font-size:12px;color:rgba(255,255,255,.8);flex:1}
+.req-label.done{color:rgba(255,255,255,.35);text-decoration:line-through}
+/* PHASE TABS */
+.phase-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.phase-tab{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;border:1px solid var(--border);background:#F8FAFC;color:#64748B;font-family:'DM Sans',sans-serif;transition:all .15s}
+.phase-tab.active{background:var(--navy);color:white;border-color:var(--navy)}
+/* TASK */
+.task-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:8px;background:#FAFAFA;border:1px solid #F1F5F9;margin-bottom:6px}
+.task-check{width:18px;height:18px;border-radius:4px;border:2px solid #CBD5E1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .15s}
+.task-check.done{background:var(--teal);border-color:var(--teal)}
+.task-text{font-size:13px;color:var(--navy);flex:1;line-height:1.4}
+.task-text.done{color:#94A3B8;text-decoration:line-through}
+/* TOOL CARDS */
+.tool-card{background:white;border:1px solid var(--border);border-radius:12px;padding:20px;cursor:pointer;transition:all .2s}
+.tool-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
+.tool-icon{font-size:26px;margin-bottom:10px}
+.tool-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.tool-desc{font-size:12px;color:var(--gray);line-height:1.4}
+/* COMMISSION TABS */
+.comm-tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto}
+.comm-tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;border:1px solid var(--border);background:white;color:#64748B;font-family:'DM Sans',sans-serif;transition:all .15s;display:flex;align-items:center;gap:6px}
+.comm-tab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.comm-tab-count{background:rgba(255,255,255,.2);border-radius:99px;padding:0 6px;font-size:11px}
+.comm-tab:not(.active) .comm-tab-count{background:#F1F5F9;color:#94A3B8}
+/* ALERT BANNER */
+.alert-banner{background:#FEF3C7;border:1px solid #FDE68A;border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.alert-banner span{font-size:12px;font-weight:600;color:#92400E}
+/* INPUT */
+.search-input{border:1px solid var(--border);border-radius:8px;padding:9px 14px 9px 36px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;background:white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center}
+.search-input:focus{border-color:var(--teal)}
+/* PAGE HEADERS */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:24px;font-weight:700;color:var(--navy)}
+.page-sub{font-size:13px;color:#94A3B8;margin-top:2px}
+/* CHART BARS */
+.chart-wrap{display:flex;align-items:flex-end;gap:6px;height:140px;margin-top:12px}
+.chart-bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px;height:100%}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height .4s ease}
+.chart-label{font-size:10px;color:#94A3B8;white-space:nowrap}
+.chart-val{font-size:9px;color:var(--navy);font-weight:600}
+/* MARKET PIN MAP */
+.map-container{background:#E8EDF2;border-radius:12px;position:relative;overflow:hidden;height:380px}
+.map-pin{position:absolute;background:var(--navy);color:white;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;transform:translate(-50%,-50%);transition:all .2s;white-space:nowrap}
+.map-pin:hover{background:var(--teal);transform:translate(-50%,-50%) scale(1.05)}
+/* BACK BTN */
+.back-btn{background:none;border:none;color:#94A3B8;font-size:13px;cursor:pointer;margin-bottom:16px;padding:0;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px}
+.back-btn:hover{color:var(--navy)}
+/* DETAIL LAYOUT */
+.detail-layout{display:grid;grid-template-columns:300px 1fr;gap:20px}
+/* SUMMARY STRIP */
+.summary-strip{background:white;border:1px solid var(--border);border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:32px;margin-top:20px;flex-wrap:wrap}
+.strip-item{display:flex;align-items:center;gap:8px}
+.strip-divider{width:1px;height:24px;background:var(--border)}
+.strip-label{font-size:11px;color:#94A3B8;text-transform:uppercase;letter-spacing:.4px}
+.strip-value{font-size:16px;font-weight:700;color:var(--navy)}
+/* NC CARD */
+.nc-card{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s}
+.nc-card:hover{box-shadow:0 8px 24px rgba(27,42,74,.1);transform:translateY(-2px)}
+/* AGENT CARD */
+.agent-card{background:white;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
+/* GOAL BAR */
+.goal-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+/* SIMPLE BAR CHART */
+.h-bar-wrap{margin-bottom:8px}
+.h-bar-label{font-size:11px;color:#64748B;margin-bottom:3px}
+.h-bar-track{background:#F1F5F9;border-radius:99px;height:20px;position:relative;overflow:hidden}
+.h-bar-fill{height:100%;border-radius:99px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px}
+.h-bar-val{font-size:10px;font-weight:700;color:white}
+/* RESPONSIVE */
+@media(max-width:900px){.grid-3{grid-template-columns:repeat(2,1fr)}.detail-layout{grid-template-columns:1fr}.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}.grid-4{grid-template-columns:repeat(2,1fr)}.prop-img{height:160px}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-wrap">
+    <div class="login-card">
+<div class="login-logo">
+          <!-- DSG LOGO: Replace src with actual path when deploying -->
+          <img src="dsg-logo.png" alt="DSG Logo" style="width:180px;margin:0 auto 12px;display:block"/>
+          <div style="font-size:11px;color:#94A3B8;letter-spacing:2px;text-transform:uppercase;margin-top:3px">Operations System</div>
+        </div>
+      <h2 class="login-title">Welcome back</h2>
+      <p class="login-sub">Sign in to your operations dashboard</p>
+      <label class="form-label">Email Address</label>
+      <input class="form-input" value="andrea@siddonsgroup.com" type="email"/>
+      <label class="form-label">Password</label>
+      <input class="form-input" value="••••••••" type="password"/>
+      <div class="forgot">Forgot password?</div>
+     <div id="loginError" style="color:#EF4444;font-size:12px;margin-bottom:8px;min-height:16px;text-align:center"></div>
+<button class="btn-login" onclick="doLogin()">Sign In to DSG Operations</button>
+      <div style="text-align:center;margin-top:16px;font-size:12px;color:#94A3B8">Secure access — David Siddons Group team only</div>
+    </div>
+    <div class="login-team-photo">
+      <!-- TEAM PHOTO -->
+<img src="dsg-team.png" alt="DSG Team"/>
+    </div>
+    <div class="login-footer">www.luxlifemiamiblog.com &nbsp;·&nbsp; (305) 508-0899 &nbsp;·&nbsp; 1515 Sunset Dr, Coral Gables FL</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" style="display:none">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="nav-logo-box">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <rect x="1" y="1" width="7" height="7" rx="1.5" fill="white" opacity=".9"/>
+          <rect x="10" y="1" width="7" height="7" rx="1.5" fill="#028090"/>
+          <rect x="1" y="10" width="7" height="7" rx="1.5" fill="#028090"/>
+          <rect x="10" y="10" width="7" height="7" rx="1.5" fill="white" opacity=".9"/>
+        </svg>
+      </div>
+      <span class="nav-logo-text">DSG OPS</span>
+    </div>
+    <button class="nav-btn active" onclick="showPage('dashboard',this)">Dashboard</button>
+    <button class="nav-btn" onclick="showPage('listings',this)">Listings</button>
+    <button class="nav-btn" onclick="showPage('transactions',this)">Transactions</button>
+    <button class="nav-btn" onclick="showPage('commissions',this)">Commissions</button>
+    <button class="nav-btn" onclick="showPage('newconstruction',this)">New Construction</button>
+    <button class="nav-btn" onclick="showPage('myteam',this)">My Team</button>
+    <button class="nav-btn" onclick="showPage('opcenter',this)">OP Center</button>
+    <button class="nav-btn" onclick="showPage('market',this)">Market</button>
+    <div class="nav-right">
+      <span class="nav-date" id="navDate"></span>
+     <div class="nav-bell" onclick="toggleBellPanel()" style="position:relative">🔔<span class="nav-bell-badge" id="bellBadge">3</span></div>
+
+      <div class="nav-user">
+        <div class="avatar" style="width:24px;height:24px;font-size:9px;background:#059669">AC</div>
+        <span class="nav-user-name">Andrea</span>
+        <span class="nav-user-role">Admin</span>
+      </div>
+    </div>
+  </nav>
+  <div id="bellPanel" style="display:none;position:fixed;top:60px;right:20px;width:320px;background:white;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:200;max-height:400px;overflow-y:auto">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #E2E8F0">
+    <span style="font-size:13px;font-weight:700;color:#1B2A4A">Notifications</span>
+    <button class="btn btn-sm" onclick="markAllRead()">Mark all read</button>
+  </div>
+  <div id="bellList"></div>
+</div>
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard" class="page active">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Good morning, Andrea 👋</div>
+        <div class="page-sub">Here's what needs your attention today</div>
+      </div>
+      <div class="alert-banner">
+        <span>⚠️</span>
+        <span>2 listings expiring within 15 days</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:24px">
+      <!-- LEFT -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="stat-card" style="cursor:pointer" onclick="showPage('listings',document.querySelectorAll('.nav-btn')[1])">
+            <div class="stat-label">Active Listings</div>
+            <div class="stat-value">5</div>
+            <div style="font-size:11px;color:var(--teal);margin-top:6px">View all →</div>
+          </div>
+          <div class="stat-card" style="cursor:pointer" onclick="showPage('transactions',document.querySelectorAll('.nav-btn')[2])">
+            <div class="stat-label">Active Transactions</div>
+            <div class="stat-value">3</div>
+            <div style="font-size:11px;color:var(--teal);margin-top:6px">View all →</div>
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-hdr">Listing Expirations</div>
+          <div id="dashExpirations"></div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-hdr">Transaction Key Dates</div>
+          <div id="dashKeyDates"></div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-hdr">Upcoming Showings</div>
+          <div id="dashShowings"></div>
+        </div>
+      </div>
+      <!-- RIGHT -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="grid-2">
+          <div class="stat-card">
+            <div class="stat-label">Sales Volume MTD</div>
+            <div class="stat-value" style="font-size:22px">$15.2M</div>
+            <div class="stat-trend trend-up">↑ 12% vs last month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">GCI MTD</div>
+            <div class="stat-value" style="font-size:22px">$296K</div>
+            <div class="stat-trend trend-up">↑ 8% vs last month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Net Commission MTD</div>
+            <div class="stat-value" style="font-size:22px">$237K</div>
+            <div class="stat-trend trend-up">↑ 5% vs last month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Pipeline</div>
+            <div class="stat-value" style="font-size:22px">$57.2M</div>
+            <div style="font-size:11px;color:#94A3B8;margin-top:6px">5 active listings</div>
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-hdr">Sales Volume — Last 6 Months</div>
+          <div class="chart-wrap" id="dashChart"></div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-hdr">My Numbers vs Team Goal</div>
+          <div id="dashGoals"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTINGS PAGE -->
+  <div id="page-listings" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Listings</div>
+        <div class="page-sub">5 active listings</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input class="search-input" placeholder="Search by address..." style="width:220px" oninput="filterListings(this.value)"/>
+        <button class="btn" id="expiringBtn" onclick="toggleExpiring()">⏱ Expiring Soon</button>
+        <button class="btn btn-teal" onclick="openAddListingModal()">+ Add New</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:24px">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card card-pad">
+          <div class="section-hdr">Expiring Soon</div>
+          <div id="listingsExpPanel"></div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-hdr">Notes</div>
+          <div style="font-size:12px;color:#475569;line-height:1.6">
+            <div style="padding:5px 0;border-bottom:1px solid #F1F5F9">Confirm photos — 5545 SW 81st</div>
+            <div style="padding:5px 0;border-bottom:1px solid #F1F5F9">Follow up seller disclosure — 360 Ocean</div>
+            <div style="padding:5px 0">MLS correction needed — 4280 Ingraham</div>
+          </div>
+          <button class="btn btn-sm" style="width:100%;margin-top:10px" onclick="showToast('Add Note coming in Phase 2','info')">+ Add Note</button>
+        </div>
+      </div>
+      <div>
+        <div id="listingsGrid" class="grid-3"></div>
+        <div class="summary-strip" id="listingStrip"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTING DETAIL -->
+  <div id="page-listing-detail" class="page">
+    <button class="back-btn" onclick="showPage('listings',document.querySelectorAll('.nav-btn')[1])">← Back to Listings</button>
+    <div id="listingDetailContent"></div>
+  </div>
+
+  <!-- TRANSACTIONS PAGE -->
+  <div id="page-transactions" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Transactions</div>
+        <div class="page-sub">3 active transactions</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input class="search-input" placeholder="Search by address..." style="width:220px"/>
+        <button class="btn btn-teal" onclick="openAddTransactionModal()">+ Add New</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:24px">
+      <div class="card card-pad">
+        <div class="section-hdr">Key Dates</div>
+        <div id="txKeyDates"></div>
+      </div>
+      <div id="transactionsGrid" class="grid-3"></div>
+    </div>
+  </div>
+
+  <!-- COMMISSIONS PAGE -->
+  <div id="page-commissions" class="page">
+    <div class="page-header">
+      <div class="page-title">Commissions</div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-sm" onclick="showToast('Reports coming in Phase 2','info')">📊 Reports</button>
+        <button class="btn btn-sm" onclick="showToast('Exporting...','info')">⬇ Export</button>
+        <button class="btn btn-teal btn-sm" onclick="showToast('Add Manual coming in Phase 2','info')">+ Add Manual</button>
+      </div>
+    </div>
+    <div class="grid-4" style="margin-bottom:24px">
+      <div class="stat-card"><div class="stat-label">Active Pipeline</div><div class="stat-value" style="font-size:20px">$1.36M</div><div class="stat-trend trend-up">↑ 18%</div></div>
+      <div class="stat-card"><div class="stat-label">Under Contract</div><div class="stat-value" style="font-size:20px">$20K</div><div style="font-size:11px;color:#94A3B8;margin-top:6px">1 deal</div></div>
+      <div class="stat-card"><div class="stat-label">Closed MTD</div><div class="stat-value" style="font-size:20px">$158K</div><div class="stat-trend trend-down">↓ 5%</div></div>
+      <div class="stat-card"><div class="stat-label">Paid MTD</div><div class="stat-value" style="font-size:20px">$32K</div><div style="font-size:11px;color:#94A3B8;margin-top:6px">1 deal paid</div></div>
+    </div>
+    <div class="comm-tabs" id="commTabs"></div>
+    <div class="card" style="overflow:auto">
+      <table class="data-table" id="commTable"></table>
+    </div>
+  </div>
+
+  <!-- NEW CONSTRUCTION -->
+  <div id="page-newconstruction" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">New Construction</div>
+        <div class="page-sub">3 active projects</div>
+      </div>
+      <button class="btn btn-teal" onclick="showToast('Add Project coming in Phase 2','info')">+ Add Project</button>
+    </div>
+    <div class="grid-4" style="margin-bottom:24px">
+      <div class="stat-card"><div class="stat-label">Total Projects</div><div class="stat-value">3</div></div>
+      <div class="stat-card"><div class="stat-label">Total Sales Volume</div><div class="stat-value" style="font-size:18px">$77.4M</div></div>
+      <div class="stat-card"><div class="stat-label">Total GCI</div><div class="stat-value" style="font-size:18px">$3.75M</div></div>
+      <div class="stat-card"><div class="stat-label">Upcoming Payments</div><div class="stat-value">4</div><div style="font-size:11px;color:#94A3B8;margin-top:6px">Next: VITA — May 17</div></div>
+    </div>
+    <div id="ncGrid" class="grid-3"></div>
+  </div>
+
+  <!-- MY TEAM -->
+  <div id="page-myteam" class="page">
+    <div class="page-header">
+      <div class="page-title">My Team</div>
+      <div style="font-size:13px;color:#94A3B8">Visible to Admin, Boss, and Cris only</div>
+    </div>
+    <div class="grid-4" style="margin-bottom:24px">
+      <div class="stat-card"><div class="stat-label">Team Sales Volume MTD</div><div class="stat-value" style="font-size:18px">$15.2M</div><div class="stat-trend trend-up">↑ 12%</div></div>
+      <div class="stat-card"><div class="stat-label">Team GCI MTD</div><div class="stat-value" style="font-size:18px">$349K</div><div class="stat-trend trend-up">↑ 8%</div></div>
+      <div class="stat-card"><div class="stat-label">Team Net Income MTD</div><div class="stat-value" style="font-size:18px">$279K</div><div class="stat-trend trend-up">↑ 5%</div></div>
+      <div class="stat-card"><div class="stat-label">Active Pipeline</div><div class="stat-value" style="font-size:18px">$57.2M</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:360px 1fr;gap:24px">
+      <div id="agentCards"></div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card card-pad">
+          <div class="section-hdr">Team Revenue by Month — GCI</div>
+          <div class="chart-wrap" id="teamChart"></div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-hdr">Agent GCI Comparison — With David vs Individual</div>
+          <div id="agentComparison"></div>
+        </div>
+        <div class="card card-pad">
+          <div class="section-hdr">Goal Progress — All Agents</div>
+          <div id="goalProgress"></div>
+        </div>
+        <div class="card card-pad" style="background:#F0FDFA;border-color:#99F6E4">
+          <div class="section-hdr" style="border-color:var(--teal);color:var(--teal)">Average Deal Size — Team vs Individual</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:8px">
+            <div></div>
+            <div style="text-align:center;font-size:11px;font-weight:700;color:var(--navy)">AVG DEAL SIZE</div>
+            <div style="text-align:center;font-size:11px;font-weight:700;color:var(--navy)">AVG GCI</div>
+            <div style="font-size:13px;color:#64748B">With David</div>
+            <div style="text-align:center;font-size:15px;font-weight:700;color:var(--navy)">$8.2M</div>
+            <div style="text-align:center;font-size:15px;font-weight:700;color:var(--teal)">$246K</div>
+            <div style="font-size:13px;color:#64748B">Individual</div>
+            <div style="text-align:center;font-size:15px;font-weight:700;color:var(--navy)">$2.1M</div>
+            <div style="text-align:center;font-size:15px;font-weight:700;color:var(--teal)">$63K</div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:#0F766E">Team deals are 4x bigger — motivate agents to collaborate with David</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OP CENTER -->
+  <div id="page-opcenter" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">OP Center</div>
+        <div class="page-sub">All your operational tools in one place</div>
+      </div>
+    </div>
+    <div id="toolGrid" class="grid-4" style="margin-bottom:24px"></div>
+    <div class="card card-pad">
+      <div class="section-hdr">Date Calculator — Quick Access</div>
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
+        <div>
+          <label class="form-label">Start Date</label>
+          <input type="date" class="form-input" id="calcStart" style="width:160px;margin-bottom:0"/>
+        </div>
+        <div>
+          <label class="form-label">Add Days</label>
+          <input type="number" class="form-input" id="calcDays" value="10" style="width:100px;margin-bottom:0"/>
+        </div>
+        <button class="btn btn-teal" onclick="calcDate()">Calculate</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="btn btn-sm" onclick="setCalcDays(10)">Inspection 10d</button>
+        <button class="btn btn-sm" onclick="setCalcDays(3)">1st Escrow 3d</button>
+        <button class="btn btn-sm" onclick="setCalcDays(10)">2nd Escrow 10d</button>
+        <button class="btn btn-sm" onclick="setCalcDays(21)">Financing 21d</button>
+        <button class="btn btn-sm" onclick="setCalcDays(30)">Closing 30d</button>
+      </div>
+      <div id="calcResult" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px;font-size:14px;font-weight:600;color:var(--navy)"></div>
+    </div>
+  </div>
+
+  <!-- MARKET -->
+  <div id="page-market" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Market</div>
+        <div class="page-sub">All DSG active listings — internal catalog — team use only</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input class="search-input" placeholder="Search properties..." style="width:200px"/>
+        <button class="btn active" id="viewGridBtn" onclick="setMarketView('grid')">⊞ Grid</button>
+        <button class="btn" id="viewMapBtn" onclick="setMarketView('map')">⊕ Map</button>
+      </div>
+    </div>
+    <div class="card card-pad" style="margin-bottom:16px">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:11px;color:#94A3B8;font-weight:600">Filter:</span>
+        <select class="btn btn-sm"><option>All Types</option><option>Sale</option><option>Rental</option></select>
+        <select class="btn btn-sm"><option>All Properties</option><option>Single Family</option><option>Condo</option></select>
+        <select class="btn btn-sm"><option>Any Beds</option><option>2+</option><option>3+</option><option>4+</option><option>5+</option></select>
+        <select class="btn btn-sm"><option>Any Baths</option><option>2+</option><option>3+</option><option>4+</option></select>
+        <button class="btn btn-sm" style="margin-left:auto" onclick="document.getElementById('calcStart').value=new Date().toISOString().split('T')[0];document.getElementById('calcDays').value='';showToast('Reset','info')">Reset</button>
+      </div>
+    </div>
+    <div id="marketGrid" class="grid-3" style="margin-bottom:16px"></div>
+    <div id="marketMap" class="map-container" style="display:none;margin-bottom:16px">
+      <img src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?w=1200&h=400&fit=crop" style="width:100%;height:100%;object-fit:cover;opacity:.35;position:absolute;inset:0"/>
+      <div class="map-pin" style="top:28%;left:42%">$22M</div>
+      <div class="map-pin" style="top:52%;left:58%">$14M</div>
+      <div class="map-pin" style="top:38%;left:28%">$12.5M</div>
+      <div class="map-pin" style="top:62%;left:48%">$5.8M</div>
+      <div class="map-pin" style="top:70%;left:38%">$2.95M</div>
+      <div style="position:absolute;bottom:14px;right:14px;background:white;border-radius:8px;padding:8px 12px;font-size:11px;color:#64748B;box-shadow:0 2px 8px rgba(0,0,0,.1)">📍 Miami, FL — Google Maps integration in Phase 2</div>
+    </div>
+    <div class="card card-pad">
+      <div class="section-hdr">Property Search Tools</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" onclick="openLink('https://matrix.brightmls.com')">🔍 Matrix MLS ↗</button>
+        <button class="btn" onclick="openLink('https://zillow.com')">🔍 Zillow ↗</button>
+        <button class="btn" onclick="openLink('https://realtor.com')">🔍 Realtor.com ↗</button>
+        <button class="btn" onclick="openLink('https://redfin.com')">🔍 Redfin ↗</button>
+        <button class="btn" onclick="openLink('https://loopnet.com')">🔍 LoopNet ↗</button>
+        <button class="btn btn-teal btn-sm" onclick="showToast('Add Link coming in Phase 2','info')">+ Add Link</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end mainApp -->
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const AGENTS=[
+  {id:0,name:'David Siddons',initials:'DS',color:'#1B2A4A',email:'david@siddonsgroup.com',role:'boss'},
+  {id:1,name:'Elaine Tatum',initials:'ET',color:'#7C3AED',email:'elaine@siddonsgroup.com',role:'agent'},
+  {id:2,name:'Jorge Salazar',initials:'JS',color:'#0369A1',email:'jorge@siddonsgroup.com',role:'agent'},
+  {id:3,name:'Shakira Siddons',initials:'SS',color:'#BE185D',email:'shakira@siddonsgroup.com',role:'agent'},
+  {id:4,name:'Stefania Cambarau',initials:'SC',color:'#B45309',email:'stefania@siddonsgroup.com',role:'agent'},
+  {id:5,name:'Cris Barros',initials:'CB',color:'#059669',email:'cris@siddonsgroup.com',role:'cris'},
+];
+const ADMIN_USER={id:99,name:'Andrea',initials:'AC',color:'#059669',email:'andrea@siddonsgroup.com',role:'admin',password:'DSGMiami2026!'};
+const LISTINGS=[
+  {id:1,mls:'A11234567',address:'5545 SW 81st Ter',neighborhood:'Ponce-Davis, Coral Gables',price:22000000,sc:3,bc:2.5,expires:5,status:'live',progress:85,agent:0,beds:7,baths:8,type:'Single Family',photo:'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=500&h=220&fit=crop'},
+  {id:2,mls:'A11345678',address:'6371 SW 107 St',neighborhood:'Pinecrest',price:13999999,sc:2.5,bc:2.5,expires:9,status:'build',progress:55,agent:0,beds:7,baths:8.5,type:'Single Family',photo:'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=500&h=220&fit=crop'},
+  {id:3,mls:'A11456789',address:'4280 Ingraham Hwy',neighborhood:'Coconut Grove',price:12500000,sc:3,bc:3,expires:14,status:'onboarding',progress:30,agent:0,beds:8,baths:9.5,type:'Single Family',photo:'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=500&h=220&fit=crop'},
+  {id:4,mls:'A11567890',address:'360 Ocean Dr #1401',neighborhood:'South Beach',price:5780000,sc:3,bc:2.5,expires:47,status:'live',progress:92,agent:0,beds:4,baths:3.5,type:'Condo',photo:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=220&fit=crop'},
+  {id:5,mls:'A11678901',address:'1643 Brickell Ave #1504',neighborhood:'Brickell',price:2950000,sc:2.5,bc:2.5,expires:27,status:'intake',progress:12,agent:0,beds:3,baths:3,type:'Condo',photo:'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=500&h=220&fit=crop'},
+];
+const TRANSACTIONS=[
+  {id:1,mls:'A11234567',address:'2100 S Ocean Blvd #15A',neighborhood:'Fort Lauderdale',price:660000,sc:3.08,closing:2,status:'hard-contract',progress:78,agent:1,type:'Condo',deal:'Cash',rep:'Buyer',photo:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500&h=220&fit=crop'},
+  {id:2,mls:'A11345678',address:'2114 Granada Blvd',neighborhood:'Coral Gables',price:5250000,sc:3,closing:38,status:'under-contract',progress:45,agent:2,type:'Single Family',deal:'Financing',rep:'Seller',photo:'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=500&h=220&fit=crop'},
+  {id:3,mls:'A11456789',address:'500 Brickell Key #2407',neighborhood:'Brickell',price:2925000,sc:2.5,closing:7,status:'closing',progress:95,agent:0,type:'Condo',deal:'Cash',rep:'Buyer',photo:'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=500&h=220&fit=crop'},
+];
+const COMMISSIONS=[
+  {id:1,month:'Apr 2025',type:'Sale',agent:'David Siddons',address:'5545 SW 81st Ter',mls:'A11234567',closeDate:'04/15/2025',closePrice:22000000,commPct:3,gci:660000,davidPct:100,davidGross:660000,deFee:6600,davidNet:66000,davidNetPay:594000,otherAgent:0,status:'active'},
+  {id:2,month:'Apr 2025',type:'Sale',agent:'Elaine Tatum',address:'2100 S Ocean Blvd',mls:'A11111111',closeDate:'04/17/2025',closePrice:660000,commPct:3.08,gci:20195,davidPct:50,davidGross:10097,deFee:202,davidNet:1010,davidNetPay:9087,otherAgent:10097,status:'under-contract'},
+  {id:3,month:'Mar 2025',type:'Sale',agent:'Jorge Salazar',address:'2114 Granada Blvd',mls:'A11345678',closeDate:'03/28/2025',closePrice:5250000,commPct:3,gci:157500,davidPct:50,davidGross:78750,deFee:1575,davidNet:7875,davidNetPay:70875,otherAgent:78750,status:'closed'},
+  {id:4,month:'Mar 2025',type:'Rental',agent:'Stefania Cambarau',address:'4111 Salzedo St',mls:'A11999999',closeDate:'03/15/2025',closePrice:2922257,commPct:1.1,gci:32067,davidPct:0,davidGross:0,deFee:0,davidNet:0,davidNetPay:0,otherAgent:32067,status:'paid'},
+];
+const NC_PROJECTS=[
+  {id:1,name:'VITA — 5 Grove Isle',address:'5 Grove Isle Dr, Miami, FL',contact:'Margarita Andreani',email:'madreani@fortuneintl.com',units:4,vol:30608318,gci:1408415,status:'active',photo:'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500&h=220&fit=crop'},
+  {id:2,name:'RITZ CARLTON — 1380 Pompano',address:'1380 N Ocean Blvd, Pompano Beach',contact:'Eduardo Cofresi',email:'eduardo@cofresi.com',units:2,vol:4193000,gci:209650,status:'active',photo:'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=500&h=220&fit=crop'},
+  {id:3,name:'MANDARIN ORIENTAL — 500 Brickell Key',address:'500 Brickell Key Dr, Miami, FL',contact:'Eduardo Cofresi',email:'eduardo@cofresi.com',units:6,vol:42550000,gci:2127500,status:'active',photo:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&h=220&fit=crop'},
+];
+const REVENUE_DATA=[
+  {month:'Nov',vol:7920000,gci:92573,net:74058},
+  {month:'Dec',vol:3491884,gci:100285,net:80228},
+  {month:'Jan',vol:37956000,gci:567866,net:454293},
+  {month:'Feb',vol:10835000,gci:159125,net:127300},
+  {month:'Mar',vol:17670000,gci:349850,net:279880},
+  {month:'Apr',vol:15165000,gci:296550,net:237240},
+];
+const TASKS={
+  0:[{t:'Gather Information — Cris or David',done:true,lock:true},{t:'Prepare Listing Agreement',done:true,lock:true},{t:'Article of Incorporation',done:false,lock:false},{t:'Tax Roll',done:true,lock:false},{t:'Confirm Staging',done:false,lock:false},{t:'Confirm Photos',done:true,lock:false}],
+  1:[{t:'Send Welcome Email',done:true,lock:false},{t:'Confirm property information',done:true,lock:false},{t:'Send Listing Agreement for signatures',done:false,lock:false},{t:'Follow up signatures',done:false,lock:false}],
+  2:[{t:'Upload Documents to SP',done:false,lock:false},{t:'Notify the Office',done:false,lock:false},{t:'Request Broker Approval email',done:false,lock:false},{t:'Start MLS',done:false,lock:false},{t:'Upload Pictures',done:false,lock:false}],
+  3:[{t:'MLS LIVE',done:false,lock:true},{t:'We are Live — email to owner',done:false,lock:false},{t:'We are Live — txt OP Team',done:false,lock:false},{t:'Send Marketing info',done:false,lock:false}],
+};
+const REQS=[
+  {t:'Executed Listing Agreement',done:true},
+  {t:'Tax Roll',done:true},
+  {t:'Broker Approval',done:false},
+  {t:'Article of Incorporation',done:false},
+  {t:'Incorporation of Trust',done:false},
+  {t:'MLS Completed — Live',done:false},
+];
+const COMM_DATA={
+  active:COMMISSIONS.filter(c=>c.status==='active'),
+  'under-contract':COMMISSIONS.filter(c=>c.status==='under-contract'),
+  closed:COMMISSIONS.filter(c=>c.status==='closed'),
+  paid:COMMISSIONS.filter(c=>c.status==='paid'),
+};
+// ============================================================
+// USER SESSION & ROLES
+// ============================================================
+let currentUser=null;
+let teamMode=false;
+
+const USERS_DB=[
+  {id:0,name:'David Siddons',initials:'DS',color:'#1B2A4A',email:'david@siddonsgroup.com',role:'boss',password:'DSGMiami2026!',agentIdx:0},
+  {id:5,name:'Cris Barros',initials:'CB',color:'#059669',email:'cris@siddonsgroup.com',role:'cris',password:'DSGMiami2026!',agentIdx:5},
+  {id:99,name:'Andrea',initials:'AC',color:'#059669',email:'andrea@siddonsgroup.com',role:'admin',password:'DSGMiami2026!',agentIdx:null},
+];
+
+function getUserAgentIdx(){
+  if(!currentUser)return 0;
+  if(currentUser.role==='admin'||currentUser.role==='boss') return 0;
+  if(currentUser.role==='cris') return teamMode?0:5;
+  return currentUser.agentIdx;
+}
+
+function canEdit(){
+  return currentUser&&currentUser.role==='admin';
+}
+
+function isTeamMode(){
+  return teamMode||(currentUser&&(currentUser.role==='admin'||currentUser.role==='boss'));
+}
+let activeCommTab='active';
+let activePhase=0;
+let selectedListingId=1;
+let expiringOnly=false;
+let marketView='grid';
+
+// ============================================================
+// UTILS
+// ============================================================
+const fmtK=n=>n>=1000000?'$'+(n/1000000).toFixed(1)+'M':n>=1000?'$'+(n/1000).toFixed(0)+'K':'$'+n;
+const fmt=n=>'$'+n.toLocaleString();
+const dotCol=d=>d<=5?'dot-red':d<=15?'dot-orange':d<=30?'dot-yellow':'dot-green';
+const dayCol=d=>d<=5?'#EF4444':d<=15?'#F97316':d<=30?'#F59E0B':'#10B981';
+const statusBadge=s=>({live:'badge-live',build:'badge-build',onboarding:'badge-onboarding',intake:'badge-intake','under-contract':'badge-teal','hard-contract':'badge-contract',closing:'badge-closing',active:'badge-active',closed:'badge-closed',paid:'badge-paid'}[s]||'badge-intake');
+const statusLabel=s=>({live:'Live',build:'Build',onboarding:'Onboarding',intake:'Intake','under-contract':'Under Contract','hard-contract':'Hard Contract',closing:'Closing Task',active:'Active',closed:'Closed',paid:'Paid'}[s]||s);
+function avatar(ag,size=32){return`<div class="avatar" style="width:${size}px;height:${size}px;font-size:${size*.32}px;background:${ag.color}">${ag.initials}</div>`}
+
+// ============================================================
+// LOGIN
+// ============================================================
+function doLogin(){
+  const emailEl=document.querySelector('#loginScreen input[type="email"]');
+  const passEl=document.querySelector('#loginScreen input[type="password"]');
+  const email=(emailEl?emailEl.value:'').trim().toLowerCase();
+  const pass=passEl?passEl.value:'';
+  const errEl=document.getElementById('loginError');
+
+  if(!email.endsWith('@siddonsgroup.com')){
+    if(errEl)errEl.textContent='Only @siddonsgroup.com emails are allowed.';
+    return;
+  }
+  const user=USERS_DB.find(u=>u.email===email&&u.password===pass);
+  if(!user){
+    if(errEl)errEl.textContent='Invalid email or password.';
+    return;
+  }
+  currentUser=user;
+  teamMode=false;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  initAll();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  if(pg)pg.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+}
+
+// ============================================================
+// INIT ALL
+// ============================================================
+function initAll(){
+  document.getElementById('navDate').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  document.getElementById('calcStart').value=new Date().toISOString().split('T')[0];
+  applyNavRoles();
+  updateNavUser();
+  buildDashboard();
+  buildListings();
+  buildTransactions();
+  buildCommissions();
+  buildNC();
+  buildMyTeam();
+  buildOPCenter();
+  buildMarket();
+}
+
+function applyNavRoles(){
+  const role=currentUser?currentUser.role:'agent';
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    if(btn.textContent.trim()==='My Team'){
+      btn.style.display=(role==='admin'||role==='boss'||role==='cris')?'':'none';
+    }
+  });
+}
+
+function updateNavUser(){
+  if(!currentUser)return;
+  const u=currentUser;
+  document.querySelector('.nav-user-name').textContent=u.name.split(' ')[0];
+  document.querySelector('.nav-user-role').textContent=
+    u.role==='admin'?'Admin':u.role==='boss'?'Boss':u.role==='cris'?'Ops Director':'Agent';
+  document.querySelector('.nav-user .avatar').textContent=u.initials;
+  document.querySelector('.nav-user .avatar').style.background=u.color;
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function buildDashboard(){
+  const agentIdx=getUserAgentIdx();
+  const u=currentUser;
+  const role=u?u.role:'agent';
+
+  const firstName=role==='admin'?'Andrea':u.name.split(' ')[0];
+  document.querySelector('#page-dashboard .page-title').textContent='Good morning, '+firstName+' \uD83D\uDC4B';
+
+  let existing=document.getElementById('teamModeBtn');
+  if(existing)existing.remove();
+  if(role==='admin'||role==='cris'){
+    const btn=document.createElement('button');
+    btn.id='teamModeBtn';
+    btn.className='btn btn-sm';
+    btn.style.cssText='margin-left:12px;background:'+(teamMode?'#1B2A4A':'white')+';color:'+(teamMode?'white':'#1B2A4A');
+    btn.textContent=role==='admin'?(teamMode?'👥 Team Mode ON':'👤 David Mode'):(teamMode?'👤 Viewing: David':'👤 My Data');
+    btn.onclick=toggleTeamMode;
+    document.querySelector('#page-dashboard .page-header').appendChild(btn);
+  }
+
+  const myListings=LISTINGS.filter(l=>l.agent===agentIdx);
+  const sorted=[...myListings].sort((a,b)=>a.expires-b.expires);
+  const expCount=myListings.filter(l=>l.expires<=15).length;
+  document.querySelector('#page-dashboard .alert-banner span:last-child').textContent=
+    expCount>0?expCount+' listing'+(expCount>1?'s':'')+' expiring within 15 days':'No listings expiring soon';
+  document.getElementById('dashExpirations').innerHTML=sorted.length?sorted.map(l=>`
+    <div class="list-row">
+      <span class="dot ${dotCol(l.expires)}"></span>
+      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1B2A4A">${l.address}</div><div style="font-size:11px;color:#94A3B8">${AGENTS[l.agent].name}</div></div>
+      <div style="text-align:right"><div style="font-size:13px;font-weight:700;color:${dayCol(l.expires)}">${l.expires}d</div><div style="font-size:10px;color:#94A3B8">expires</div></div>
+    </div>`).join(''):'<div style="font-size:12px;color:#94A3B8;padding:8px 0">No listings</div>';
+
+  const myTx=TRANSACTIONS.filter(t=>t.agent===agentIdx);
+  const kdMap=myTx.map(t=>[['Closing Date',t.address,t.closing]]).flat();
+  document.getElementById('dashKeyDates').innerHTML=kdMap.length?kdMap.map(([l,a,d])=>`
+    <div class="list-row">
+      <div style="flex:1"><div style="font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.3px">${l}</div><div style="font-size:13px;font-weight:600;color:#1B2A4A">${a}</div></div>
+      <div style="font-size:13px;font-weight:700;color:${dayCol(d)}">${d}d</div>
+    </div>`).join(''):'<div style="font-size:12px;color:#94A3B8;padding:8px 0">No upcoming key dates</div>';
+
+  const allShowings=[
+    {agent:0,buyer:'Marcus Rivera',address:'5545 SW 81st Ter',datetime:'Today · 2:00 PM',status:'confirmed'},
+    {agent:0,buyer:'Sarah Chen',address:'360 Ocean Dr #1401',datetime:'Tomorrow · 10:30 AM',status:'pending'},
+    {agent:0,buyer:'James Taylor',address:'6371 SW 107 St',datetime:'Apr 26 · 4:00 PM',status:'confirmed'},
+  ];
+  const myShowings=allShowings.filter(s=>s.agent===agentIdx);
+  document.getElementById('dashShowings').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <span style="font-size:12px;color:#64748B">${myShowings.length} showing${myShowings.length!==1?'s':''}</span>
+      <button class="btn btn-sm" onclick="openShowingsModal()">See All</button>
+    </div>`+
+    (myShowings.length?myShowings.map(s=>`
+    <div class="list-row">
+      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1B2A4A">${s.address}</div><div style="font-size:11px;color:#94A3B8">${s.buyer}</div></div>
+      <div style="text-align:right"><div style="font-size:12px;color:#1B2A4A;font-weight:500">${s.datetime}</div><span class="badge ${s.status==='confirmed'?'badge-live':s.status==='cancelled'?'badge-warn':'badge-intake'}">${s.status}</span></div>
+    </div>`).join(''):'<div style="font-size:12px;color:#94A3B8;padding:8px 0">No upcoming showings</div>');
+
+  const myVol=myListings.reduce((s,l)=>s+l.price,0);
+  const statCards=document.querySelectorAll('#page-dashboard .stat-card');
+  if(statCards[3]){
+    statCards[3].querySelector('.stat-label').textContent='ACTIVE LISTINGS SALES VOLUME';
+    statCards[3].querySelector('.stat-value').textContent=fmtK(myVol)||'$0';
+  }
+
+  const maxGCI=Math.max(...REVENUE_DATA.map(d=>d.gci));
+  document.getElementById('dashChart').innerHTML=REVENUE_DATA.map(d=>`
+    <div class="chart-bar-wrap">
+      <div class="chart-val">${fmtK(d.gci)}</div>
+      <div style="flex:1;display:flex;align-items:flex-end;width:100%">
+        <div class="chart-bar" style="background:var(--navy);height:${Math.round(d.gci/maxGCI*100)}%;width:100%"></div>
+      </div>
+      <div class="chart-label">${d.month}</div>
+    </div>`).join('');
+
+  const yearGCI=myListings.reduce((s,l)=>s+l.price*(l.sc/100),0)*12;
+  const goalTarget=500000;
+  const pct=Math.min(Math.round(yearGCI/goalTarget*100),100)||59;
+  const teamPct=78;
+  document.getElementById('dashGoals').innerHTML=`
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:#64748B">Individual GCI Goal — $500K</span><span style="font-size:12px;font-weight:700;color:#F59E0B">${pct}%</span></div>
+      <div class="prog-wrap" style="height:8px"><div class="prog-fill" style="width:${pct}%;height:8px"></div></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:#64748B">Team Goal — $3M</span><span style="font-size:12px;font-weight:700;color:#10B981">${teamPct}%</span></div>
+      <div class="prog-wrap" style="height:8px"><div class="prog-fill" style="width:${teamPct}%;height:8px"></div></div>
+    </div>`;
+}
+
+function toggleTeamMode(){
+  teamMode=!teamMode;
+  buildDashboard();
+}
+
+// ============================================================
+// LISTINGS
+// ============================================================
+function buildListings(filter='',expiringFilter=false){
+  let data=isTeamMode()?[...LISTINGS]:[...LISTINGS.filter(l=>l.agent===getUserAgentIdx())];
+  if(filter)data=data.filter(l=>l.address.toLowerCase().includes(filter.toLowerCase()));
+  if(expiringFilter)data=data.filter(l=>l.expires<=30);
+  document.getElementById('listingsGrid').innerHTML=data.map(l=>propCard(l,'selectListing('+l.id+')')).join('');
+  // Exp panel
+  document.getElementById('listingsExpPanel').innerHTML=LISTINGS.filter(l=>l.expires<=30).map(l=>`
+    <div style="padding:7px 0;border-bottom:1px solid #F1F5F9">
+      <div style="font-size:11px;font-weight:700;color:${dayCol(l.expires)}">${l.expires} DAYS</div>
+      <div style="font-size:12px;color:#1B2A4A;font-weight:500">${l.address}</div>
+    </div>`).join('');
+  // Strip
+  const total=LISTINGS.reduce((s,l)=>s+l.price,0);
+  const gci=LISTINGS.reduce((s,l)=>s+l.price*l.sc/100,0);
+  document.getElementById('listingStrip').innerHTML=`
+    <div class="strip-item"><span class="strip-label">Total Listings</span><span class="strip-value">${LISTINGS.length}</span></div>
+    <div class="strip-divider"></div>
+    <div class="strip-item"><span class="strip-label">Total Sales Volume</span><span class="strip-value">${fmtK(total)}</span></div>
+    <div class="strip-divider"></div>
+    <div class="strip-item"><span class="strip-label">Total GCI</span><span class="strip-value" style="color:var(--teal)">${fmtK(gci)}</span></div>`;
+}
+function filterListings(v){buildListings(v,expiringOnly);}
+function toggleExpiring(){expiringOnly=!expiringOnly;document.getElementById('expiringBtn').style.background=expiringOnly?'#FEF3C7':'';buildListings('',expiringOnly);}
+function selectListing(id){selectedListingId=id;buildListingDetail(id);showPage('listing-detail',null);}
+function propCard(l,onclick=''){
+  const dc=dotCol(l.expires||30);
+  return`<div class="prop-card" onclick="${onclick}">
+    <div style="position:relative">
+      <img class="prop-img" src="${l.photo}" alt="${l.address}" loading="lazy"/>
+      <div style="position:absolute;top:10px;left:10px;background:rgba(27,42,74,.85);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px">MLS# ${l.mls}</div>
+      <div style="position:absolute;top:10px;right:10px;width:10px;height:10px;border-radius:50%;background:${dc==='dot-red'?'#EF4444':dc==='dot-orange'?'#F97316':dc==='dot-yellow'?'#F59E0B':'#10B981'};box-shadow:0 0 0 2px white"></div>
+    </div>
+    <div class="prop-body">
+      <div class="prop-address">${l.address}</div>
+      <div class="prop-neighborhood">${l.neighborhood}</div>
+      <div class="prop-price">${fmtK(l.price)}</div>
+      <div class="prop-comm">Seller ${l.sc}% &nbsp;·&nbsp; Buyer ${l.bc}%</div>
+      <div class="prog-wrap" style="height:4px;margin-bottom:6px"><div class="prog-fill" style="width:${l.progress}%;height:4px"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:11px;color:#94A3B8">${l.progress}%</span>
+        <span style="font-size:11px;color:${dayCol(l.expires||30)}">Exp in ${l.expires||'—'}d</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:6px">${avatar(AGENTS[l.agent],22)}<span style="font-size:11px;color:#64748B">${AGENTS[l.agent].name}</span></div>
+        <span class="badge ${statusBadge(l.status)}">${statusLabel(l.status)}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// LISTING DETAIL
+// ============================================================
+function buildListingDetail(id){
+  const l=LISTINGS.find(x=>x.id===id);
+  if(!l)return;
+  const phases=['Intake & Setup','Onboarding & Data','Build & Approval','Launch & Market'];
+  const phaseProg=i=>{const t=TASKS[i];return Math.round(t.filter(x=>x.done).length/t.length*100);};
+  const reqDone=REQS.filter(r=>r.done).length;
+  const allReq=reqDone===REQS.length;
+  document.getElementById('listingDetailContent').innerHTML=`
+    <!-- HEADER -->
+    <div class="card card-pad" style="margin-bottom:16px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <h1 style="font-size:22px;font-weight:700;color:#1B2A4A;margin-bottom:6px">${l.address}</h1>
+          <div style="display:flex;gap:16px;font-size:13px;color:#64748B;flex-wrap:wrap">
+            <span>Price: <strong style="color:#1B2A4A">${fmt(l.price)}</strong></span>
+            <span>Seller: <strong>${l.sc}%</strong></span>
+            <span>Buyer: <strong>${l.bc}%</strong></span>
+            <span>MLS#: <strong>${l.mls}</strong></span>
+            <span>Expires in: <strong style="color:${dayCol(l.expires)}">${l.expires}d</strong></span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="badge ${statusBadge(l.status)}" style="font-size:12px;padding:5px 14px">${statusLabel(l.status)}</span>
+          <span style="font-size:17px;font-weight:700;color:var(--teal)">${l.progress}%</span>
+          <button class="btn btn-teal btn-sm" onclick="showToast('Use the Listings page to add new listings','info')">+ Add New</button>
+        </div>
+      </div>
+      <div class="prog-wrap" style="height:6px;margin-top:14px"><div class="prog-fill" style="width:${l.progress}%;height:6px"></div></div>
+    </div>
+    <div class="detail-layout">
+      <!-- LEFT COLUMN -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <!-- OWNER INFO -->
+        <div class="card card-pad">
+          <div class="section-hdr">Owner Info</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px"><span>👤</span><span style="font-size:13px;color:#1B2A4A">John &amp; Sarah Martinez</span></div>
+            <div style="display:flex;align-items:center;gap:10px"><span>📞</span><span style="font-size:13px;color:#1B2A4A">(305) 555-1234</span></div>
+            <div style="display:flex;align-items:center;gap:10px"><span>✉️</span><span style="font-size:13px;color:#1B2A4A">j.martinez@email.com</span></div>
+          </div>
+          <button class="btn btn-sm" style="margin-top:10px" onclick="showToast('Add Owner coming in Phase 2','info')">+ Add Owner</button>
+        </div>
+        <!-- PROPERTY DETAILS -->
+        <div class="card card-pad">
+          <div class="section-hdr">Property Details</div>
+          <img src="${l.photo}" alt="${l.address}" style="width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:12px" loading="lazy"/>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            ${[['Beds',l.beds],['Baths',l.baths],['Type',l.type],['HOA','$350/mo']].map(([k,v])=>`<div><div style="font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.3px">${k}</div><div style="font-size:14px;font-weight:600;color:#1B2A4A">${v}</div></div>`).join('')}
+          </div>
+          <button class="btn" style="width:100%;margin-top:12px;font-size:12px" onclick="showToast('Editable flyer coming in Phase 2','info')">More Details →</button>
+        </div>
+        <!-- PHOTOS -->
+        <div class="card card-pad">
+          <div class="section-hdr">Photos</div>
+          <div style="font-size:12px;color:#94A3B8;margin-bottom:10px">Upload directly or paste Dropbox/Google Drive link</div>
+          <button class="btn btn-sm" style="margin-right:6px" onclick="document.getElementById('photoUploadInput').click()">Upload Photos</button>
+          <input type="file" id="photoUploadInput" accept="image/*" multiple style="display:none" onchange="showToast('Photos uploaded successfully','success')"/>
+          <button class="btn btn-sm" onclick="const url=prompt('Enter Dropbox or Google Drive link:');if(url)showToast('Link saved','success')">Paste Link</button>
+        </div>
+        <!-- REQUIREMENTS -->
+        <div class="req-card">
+          <div class="req-title">Listing Requirements</div>
+          <div id="reqList">${buildReqList()}</div>
+          ${allReq?'<div style="margin-top:10px;background:var(--teal);border-radius:6px;padding:8px;text-align:center;font-size:12px;color:white;font-weight:600">✓ Commission row created automatically</div>':''}
+          <div style="margin-top:8px;font-size:11px;color:rgba(255,255,255,.4);text-align:right">${reqDone}/${REQS.length} complete</div>
+        </div>
+      </div>
+      <!-- RIGHT COLUMN -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <!-- PHASES -->
+        <div class="card card-pad">
+          <div class="phase-tabs" id="phaseTabs">
+            ${phases.map((ph,i)=>`<button class="phase-tab ${activePhase===i?'active':''}" onclick="switchPhase(${i})">${ph} &nbsp;<span style="opacity:.7">${phaseProg(i)}%</span></button>`).join('')}
+          </div>
+          <div class="prog-wrap" style="height:5px;margin-bottom:14px"><div class="prog-fill" style="width:${phaseProg(activePhase)}%;height:5px"></div></div>
+          <div id="taskList">${buildTaskList(activePhase)}</div>
+          <button class="btn btn-sm" style="margin-top:10px" onclick="showToast('Add Task coming in Phase 2','info')">+ Add Task</button>
+        </div>
+        <!-- SHOWINGS -->
+        <div class="card card-pad">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="section-hdr" style="margin:0">Showings</div>
+            <button class="btn btn-teal btn-sm" onclick="showToast('Add Showing coming in Phase 2','info')">+ Add Showing</button>
+          </div>
+          ${[['Marcus Rivera','mrivera@compass.com','Apr 25 · 2:00 PM','confirmed'],['Sarah Chen','schen@onesy.com','Apr 26 · 10:30 AM','pending']].map(([ag,em,dt,st])=>`
+          <div class="list-row">
+            <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1B2A4A">${ag}</div><div style="font-size:11px;color:#94A3B8">${em}</div></div>
+            <div style="text-align:right"><div style="font-size:12px;font-weight:600;color:#1B2A4A">${dt}</div><span class="badge ${st==='confirmed'?'badge-live':'badge-intake'}">${st}</span></div>
+          </div>`).join('')}
+        </div>
+        <!-- OPEN HOUSE -->
+        <div class="card card-pad">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="section-hdr" style="margin:0">Open House &amp; Brokers Open</div>
+            <button class="btn btn-teal btn-sm" onclick="showToast('Add Event coming in Phase 2','info')">+ Add Event</button>
+          </div>
+          <div class="list-row">
+            <span class="badge badge-onboarding">Brokers Open</span>
+            <div style="flex:1;margin-left:10px"><div style="font-size:13px;color:#1B2A4A">Apr 28 · 11:00 AM – 2:00 PM</div><div style="font-size:11px;color:#94A3B8">Host: David Siddons</div></div>
+          </div>
+          <div class="list-row">
+            <span class="badge badge-teal">Open House</span>
+            <div style="flex:1;margin-left:10px"><div style="font-size:13px;color:#1B2A4A">May 4 · 1:00 PM – 4:00 PM</div><div style="font-size:11px;color:#94A3B8">Host: Elaine Tatum</div></div>
+          </div>
+        </div>
+        <!-- DOCUMENTS -->
+        <div class="card card-pad">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="section-hdr" style="margin:0">Documents</div>
+            <button class="btn btn-teal btn-sm" onclick="showToast('Upload Files coming in Phase 2','info')">+ Upload Files</button>
+          </div>
+          ${[['Listing Agreement — Executed.pdf','1.37 MB','Apr 15'],['Property Questionnaire.pdf','12.8 MB','Apr 16'],['Tax Roll & Ownership.pdf','1.2 MB','Apr 16']].map(([n,s,d])=>`
+          <div class="list-row">
+            <span style="font-size:22px">📄</span>
+            <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1B2A4A">${n}</div><div style="font-size:11px;color:#94A3B8">${s} · ${d}</div></div>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-sm" style="font-size:11px" onclick="showToast('Opening document...','info')">↗</button>
+              <button class="btn btn-sm" style="font-size:11px" onclick="showToast('Downloading document...','info')">↓</button>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+function buildReqList(){return REQS.map((r,i)=>`
+  <div class="req-row">
+    <div class="req-check ${r.done?'done':''}" onclick="toggleReq(${i})">${r.done?'<span style="color:white;font-size:10px;font-weight:700">✓</span>':''}</div>
+    <span class="req-label ${r.done?'done':''}">${r.t}</span>
+  </div>`).join('');}
+function buildTaskList(phase){return TASKS[phase].map((task,i)=>`
+  <div class="task-item">
+    <div class="task-check ${task.done?'done':''}" onclick="toggleTask(${phase},${i})">${task.done?'<span style="color:white;font-size:11px;font-weight:700">✓</span>':''}</div>
+    <span class="task-text ${task.done?'done':''}">${task.t}</span>
+    ${task.lock?'<span style="font-size:11px;color:#94A3B8">🔒</span>':'<button class="btn btn-sm" style="font-size:10px;padding:2px 6px;color:#EF4444;border-color:#FCA5A5">✕</button>'}
+  </div>`).join('');}
+function switchPhase(i){
+  activePhase=i;
+  document.querySelectorAll('.phase-tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+  document.getElementById('taskList').innerHTML=buildTaskList(i);
+}
+function toggleTask(phase,idx){
+  TASKS[phase][idx].done=!TASKS[phase][idx].done;
+  document.getElementById('taskList').innerHTML=buildTaskList(phase);
+}
+function toggleReq(i){
+  REQS[i].done=!REQS[i].done;
+  document.getElementById('reqList').innerHTML=buildReqList();
+}
+
+// ============================================================
+// TRANSACTIONS
+// ============================================================
+function buildTransactions(){
+  const txData=isTeamMode()?TRANSACTIONS:TRANSACTIONS.filter(t=>t.agent===getUserAgentIdx());
+document.getElementById('transactionsGrid').innerHTML=txData.map(t=>{
+    const isCash=t.deal==='Cash';
+    return`<div class="prop-card">
+      <div style="position:relative">
+        <img class="prop-img" src="${t.photo}" alt="${t.address}" loading="lazy"/>
+        <div style="position:absolute;top:10px;left:10px;background:rgba(27,42,74,.85);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px">MLS# ${t.mls}</div>
+        ${t.sc<2?'<div style="position:absolute;top:10px;right:10px;background:#FEF3C7;color:#92400E;font-size:9px;font-weight:700;padding:3px 7px;border-radius:4px">LOW COMM</div>':''}
+      </div>
+      <div class="prop-body">
+        <div class="prop-address">${t.address}</div>
+        <div class="prop-neighborhood">${t.rep} · ${t.type} · ${t.deal}</div>
+        <div class="prop-price">${fmtK(t.price)}</div>
+        <div class="prop-comm">Commission: ${t.sc}%</div>
+        <div class="prog-wrap" style="height:4px;margin-bottom:6px"><div class="prog-fill" style="width:${t.progress}%;height:4px"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+          <span style="font-size:11px;color:#94A3B8">${t.progress}%</span>
+          <span style="font-size:11px;color:${dayCol(t.closing)}">Closing in ${t.closing}d</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          ${avatar(AGENTS[t.agent],22)}
+          <span class="badge ${statusBadge(t.status)}">${statusLabel(t.status)}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  // Key dates panel
+  document.getElementById('txKeyDates').innerHTML=[
+    ['Inspection Due','2100 S Ocean',2],['1st Escrow','2114 Granada',5],['Closing','500 Brickell Key',7],['2nd Escrow','2100 S Ocean',12],['Commitment Letter','2114 Granada',18]
+  ].map(([l,a,d])=>`<div style="padding:8px 0;border-bottom:1px solid #F1F5F9"><div style="font-size:10px;font-weight:700;color:${dayCol(d)};text-transform:uppercase;letter-spacing:.4px">${l} · ${d}d</div><div style="font-size:12px;color:#1B2A4A;font-weight:500">${a}</div></div>`).join('');
+}
+
+// ============================================================
+// COMMISSIONS
+// ============================================================
+function buildCommissions(){
+  const tabs=[{id:'active',label:'Active Listings',color:'#028090'},{id:'under-contract',label:'Under Contract',color:'#3B82F6'},{id:'closed',label:'Closed',color:'#10B981'},{id:'paid',label:'Paid',color:'#1B2A4A'}];
+  document.getElementById('commTabs').innerHTML=tabs.map(t=>`
+    <button class="comm-tab ${activeCommTab===t.id?'active':''}" onclick="switchCommTab('${t.id}')" style="${activeCommTab===t.id?'background:'+t.color+';border-color:'+t.color:''}">
+      ${t.label}<span class="comm-tab-count">${(COMM_DATA[t.id]||[]).length}</span>
+    </button>`).join('');
+  const rows=COMM_DATA[activeCommTab]||[];
+  if(rows.length===0){document.getElementById('commTable').innerHTML=`<tr><td colspan="14" style="text-align:center;padding:30px;color:#94A3B8;font-size:13px">No commissions in this section yet</td></tr>`;return;}
+  document.getElementById('commTable').innerHTML=`
+    <thead><tr>
+      <th>Month</th><th>Type</th><th>Agent</th><th>Address</th><th>MLS#</th><th>Close Date</th><th>Close Price</th><th>Comm%</th><th>GCI</th><th>David %</th><th>David Gross</th><th>D.E Fee</th><th>David Net Pay</th><th>Other Agent</th><th>Status</th>
+    </tr></thead>
+    <tbody>${rows.map(c=>`<tr>
+      <td style="white-space:nowrap">${c.month}</td>
+      <td><span class="badge ${c.type==='Sale'?'badge-teal':'badge-rental'}">${c.type}</span></td>
+      <td style="font-size:12px">${c.agent}</td>
+      <td style="font-size:12px;white-space:nowrap">${c.address}</td>
+      <td style="font-size:11px;color:#94A3B8">${c.mls}</td>
+      <td style="font-size:12px;white-space:nowrap">${c.closeDate}</td>
+      <td style="font-weight:700">${fmtK(c.closePrice)}</td>
+      <td style="color:${c.commPct<2?'#F97316':'#1B2A4A'};font-weight:600">${c.commPct}%</td>
+      <td style="font-weight:700;color:var(--teal)">${fmtK(c.gci)}</td>
+      <td>${c.davidPct}%</td>
+      <td>${fmtK(c.davidGross)}</td>
+      <td style="color:#94A3B8">${fmtK(c.deFee)}</td>
+      <td style="font-weight:600">${fmtK(c.davidNetPay)}</td>
+      <td>${fmtK(c.otherAgent)}</td>
+      <td><span class="badge ${statusBadge(c.status)}">${statusLabel(c.status)}</span></td>
+    </tr>`).join('')}</tbody>`;
+}
+function switchCommTab(id){activeCommTab=id;buildCommissions();}
+
+// ============================================================
+// NEW CONSTRUCTION
+// ============================================================
+function buildNC(){
+  document.getElementById('ncGrid').innerHTML=NC_PROJECTS.map(p=>`
+    <div class="nc-card">
+      <img src="${p.photo}" alt="${p.name}" style="width:100%;height:185px;object-fit:cover" loading="lazy"/>
+      <div style="padding:16px 18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span class="badge badge-active">Active</span>
+          <span style="font-size:12px;color:#94A3B8">${p.units} units</span>
+        </div>
+        <div style="font-size:16px;font-weight:700;color:#1B2A4A;margin-bottom:3px">${p.name}</div>
+        <div style="font-size:11px;color:#94A3B8;margin-bottom:8px">${p.address}</div>
+        <div style="font-size:12px;color:#64748B;margin-bottom:12px"><strong>Contact:</strong> ${p.contact} — ${p.email}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="background:#F8FAFC;border-radius:8px;padding:10px">
+            <div style="font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.3px">Sales Volume</div>
+            <div style="font-size:15px;font-weight:700;color:#1B2A4A">${fmtK(p.vol)}</div>
+          </div>
+          <div style="background:#F0FDFA;border-radius:8px;padding:10px">
+            <div style="font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.3px">Total GCI</div>
+            <div style="font-size:15px;font-weight:700;color:var(--teal)">${fmtK(p.gci)}</div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ============================================================
+// MY TEAM
+// ============================================================
+function buildMyTeam(){
+  // Agent cards
+  document.getElementById('agentCards').innerHTML=AGENTS.map((ag,i)=>{
+    const pct=[65,42,78,31,55,89][i];
+    const col=pct>=75?'#10B981':pct>=25?'#F59E0B':'#EF4444';
+    return`<div class="agent-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        ${avatar(ag,40)}
+        <div><div style="font-size:15px;font-weight:700;color:#1B2A4A">${ag.name}</div><div style="font-size:11px;color:#94A3B8">${ag.role||'Agent'}</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:4px;font-size:12px;margin-bottom:10px">
+        <div></div><div style="text-align:center;font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase">W/David</div><div style="text-align:center;font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase">Individual</div>
+        ${[['Active',3,8],['Contract',1,2],['Closed',8,12]].map(([l,d,ind])=>`<div style="color:#64748B">${l}</div><div style="text-align:center;font-weight:700;color:#1B2A4A">${d}</div><div style="text-align:center;font-weight:700;color:var(--teal)">${ind}</div>`).join('')}
+      </div>
+      <div style="border-top:1px solid #F1F5F9;padding-top:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#64748B">Goal progress</span><span style="font-size:12px;font-weight:700;color:${col}">${pct}%</span></div>
+        <div class="prog-wrap" style="height:5px"><div style="width:${pct}%;height:5px;border-radius:99px;background:${col}"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+  // Team chart
+  const maxGCI=Math.max(...REVENUE_DATA.map(d=>d.gci));
+  document.getElementById('teamChart').innerHTML=REVENUE_DATA.map(d=>`
+    <div class="chart-bar-wrap">
+      <div class="chart-val">${fmtK(d.gci)}</div>
+      <div style="flex:1;display:flex;align-items:flex-end;width:100%">
+        <div class="chart-bar" style="background:var(--teal);height:${Math.round(d.gci/maxGCI*100)}%;width:100%"></div>
+      </div>
+      <div class="chart-label">${d.month}</div>
+    </div>`).join('');
+  // Agent comparison
+  const agentGCI=[{n:'David S.',dsg:2448,ind:2448},{n:'Elaine T.',dsg:265,ind:66},{n:'Jorge S.',dsg:251,ind:178},{n:'Shakira S.',dsg:193,ind:48},{n:'Stefania C.',dsg:217,ind:78},{n:'Cris B.',dsg:124,ind:72}];
+  const maxVal=Math.max(...agentGCI.map(a=>a.dsg+a.ind));
+  document.getElementById('agentComparison').innerHTML=agentGCI.map(a=>`
+    <div class="h-bar-wrap">
+      <div class="h-bar-label">${a.n}</div>
+      <div style="display:flex;gap:4px;height:18px">
+        <div style="flex:${a.dsg};background:#1B2A4A;border-radius:4px 0 0 4px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px"><span style="font-size:9px;color:white;font-weight:700">$${a.dsg}K</span></div>
+        <div style="flex:${a.ind};background:#028090;border-radius:0 4px 4px 0;display:flex;align-items:center;justify-content:flex-end;padding-right:4px"><span style="font-size:9px;color:white;font-weight:700">$${a.ind}K</span></div>
+      </div>
+    </div>`).join('')+
+    `<div style="display:flex;gap:12px;margin-top:8px"><div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;background:#1B2A4A;border-radius:2px"></div><span style="font-size:11px;color:#64748B">With David</span></div><div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;background:#028090;border-radius:2px"></div><span style="font-size:11px;color:#64748B">Individual</span></div></div>`;
+  // Goal progress
+  document.getElementById('goalProgress').innerHTML=AGENTS.map((ag,i)=>{
+    const pct=[65,42,78,31,55,89][i];
+    const col=pct>=75?'#10B981':pct>=25?'#F59E0B':'#EF4444';
+    return`<div class="goal-row">
+      ${avatar(ag,28)}
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px;font-weight:600;color:#1B2A4A">${ag.name}</span><span style="font-size:12px;font-weight:700;color:${col}">${pct}%</span></div>
+        <div class="prog-wrap" style="height:6px"><div style="width:${pct}%;height:6px;border-radius:99px;background:${col}"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// OP CENTER
+// ============================================================
+function buildOPCenter(){
+  const tools=[
+    {icon:'📅',name:'Calendar',desc:'Team and personal calendar with key dates',bg:'#EFF6FF'},
+    {icon:'🗓',name:'Date Calculator',desc:'Calculate key dates instantly',bg:'#F0FDF4'},
+    {icon:'✅',name:'Task Management',desc:'Urgent, Important, Normal tasks',bg:'#FEF3C7'},
+    {icon:'🔔',name:'Reminders',desc:'Date-based standalone reminders',bg:'#FFF7ED'},
+    {icon:'📝',name:'Notes',desc:'General notes with tags',bg:'#F5F3FF'},
+    {icon:'✉️',name:'Email Templates',desc:'Pre-written email templates library',bg:'#EFF6FF'},
+    {icon:'💬',name:'WhatsApp Templates',desc:'Quick WhatsApp message templates',bg:'#F0FDF4'},
+    {icon:'👥',name:'Contacts',desc:'Attorney, Inspector, Agent directory',bg:'#FEF3C7'},
+    {icon:'📄',name:'Document Templates',desc:'Downloadable blank contract forms',bg:'#F5F3FF'},
+    {icon:'🎨',name:'Flyer Templates',desc:'DSG branded property flyers',bg:'#FFF7ED'},
+    {icon:'🔗',name:'Resource Links',desc:'MLS, DocuSign, SP quick links',bg:'#EFF6FF'},
+    {icon:'🏠',name:'Client Showings',desc:'All upcoming buyer visits',bg:'#F0FDF4'},
+    {icon:'✍️',name:'DocuSign',desc:'Open DocuSign in new tab',bg:'#DBEAFE'},
+  ];
+  document.getElementById('toolGrid').innerHTML=tools.map(t=>`
+    <div class="tool-card" style="background:${t.bg}">
+      <div class="tool-icon">${t.icon}</div>
+      <div class="tool-name">${t.name}</div>
+      <div class="tool-desc">${t.desc}</div>
+    </div>`).join('');
+}
+function calcDate(){
+  const start=new Date(document.getElementById('calcStart').value);
+  const days=parseInt(document.getElementById('calcDays').value)||0;
+  const result=new Date(start);
+  result.setDate(result.getDate()+days);
+  const opts={weekday:'long',year:'numeric',month:'long',day:'numeric'};
+  const res=document.getElementById('calcResult');
+  const isWeekend=result.getDay()===0||result.getDay()===6;
+  const nextBiz=new Date(result);
+  while(nextBiz.getDay()===0||nextBiz.getDay()===6)nextBiz.setDate(nextBiz.getDate()+1);
+  res.innerHTML=`<div>📅 Result: <strong>${result.toLocaleDateString('en-US',opts)}</strong></div>${isWeekend?`<div style="margin-top:6px;font-size:12px;color:var(--teal)">⚡ Next business day: <strong>${nextBiz.toLocaleDateString('en-US',opts)}</strong></div>`:''}`;
+  res.style.display='block';
+}
+// ============================================================
+// BELL NOTIFICATIONS
+// ============================================================
+const NOTIFICATIONS=[
+  {id:1,text:'5545 SW 81st Ter listing expires in 5 days',type:'urgent',dueDate:Date.now()+5*86400000,read:false},
+  {id:2,text:'Inspection due — 2100 S Ocean Blvd in 2 days',type:'urgent',dueDate:Date.now()+2*86400000,read:false},
+  {id:3,text:'Escrow deadline — 2114 Granada in 5 days',type:'warn',dueDate:Date.now()+5*86400000,read:false},
+];
+function getActiveNotifications(){
+  const now=Date.now();
+  return NOTIFICATIONS.filter(n=>!n.read&&(now-n.dueDate)<86400000);
+}
+function toggleBellPanel(){
+  const p=document.getElementById('bellPanel');
+  const visible=p.style.display==='block';
+  p.style.display=visible?'none':'block';
+  if(!visible)renderBellList();
+}
+function renderBellList(){
+  const notifs=getActiveNotifications();
+  document.getElementById('bellBadge').textContent=notifs.length;
+  document.getElementById('bellBadge').style.display=notifs.length?'flex':'none';
+  const colors={urgent:'#FEE2E2',warn:'#FEF3C7',info:'#DBEAFE'};
+  const textColors={urgent:'#B91C1C',warn:'#92400E',info:'#1D4ED8'};
+  document.getElementById('bellList').innerHTML=notifs.length?notifs.map(n=>`
+    <div style="padding:12px 16px;border-bottom:1px solid #F1F5F9;background:${colors[n.type]||'#F8FAFC'}">
+      <div style="font-size:12px;font-weight:600;color:${textColors[n.type]||'#1B2A4A'};margin-bottom:2px">${n.text}</div>
+      <div style="font-size:11px;color:#94A3B8">${new Date(n.dueDate).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
+    </div>`).join(''):'<div style="padding:20px;text-align:center;font-size:12px;color:#94A3B8">No new notifications</div>';
+}
+function markAllRead(){
+  NOTIFICATIONS.forEach(n=>n.read=true);
+  renderBellList();
+  document.getElementById('bellPanel').style.display='none';
+}
+document.addEventListener('click',function(e){
+  const panel=document.getElementById('bellPanel');
+  const bell=document.querySelector('.nav-bell');
+  if(panel&&bell&&!panel.contains(e.target)&&!bell.contains(e.target)){
+    panel.style.display='none';
+  }
+});
+// ============================================================
+// SHOWINGS MODAL
+// ============================================================
+let showingsFilter='all';
+const ALL_SHOWINGS=[
+  {agent:0,buyer:'Marcus Rivera',address:'5545 SW 81st Ter',datetime:'Today · 2:00 PM',status:'confirmed'},
+  {agent:0,buyer:'Sarah Chen',address:'360 Ocean Dr #1401',datetime:'Tomorrow · 10:30 AM',status:'pending'},
+  {agent:0,buyer:'James Taylor',address:'6371 SW 107 St',datetime:'Apr 26 · 4:00 PM',status:'confirmed'},
+];
+function openShowingsModal(){
+  const m=document.getElementById('showingsModal');
+  m.style.display='flex';
+  showingsFilter='all';
+  ['sfAll','sfConfirmed','sfPending','sfCancelled'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.style.background='white';el.style.color='#1B2A4A';}
+  });
+  const allBtn=document.getElementById('sfAll');
+  if(allBtn){allBtn.style.background='#1B2A4A';allBtn.style.color='white';}
+  renderShowingsModal();
+}
+function closeShowingsModal(){
+  document.getElementById('showingsModal').style.display='none';
+}
+function filterShowings(f){
+  showingsFilter=f;
+  ['sfAll','sfConfirmed','sfPending','sfCancelled'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.style.background='white';el.style.color='#1B2A4A';}
+  });
+  const map={all:'sfAll',confirmed:'sfConfirmed',pending:'sfPending',cancelled:'sfCancelled'};
+  const active=document.getElementById(map[f]);
+  if(active){active.style.background='#1B2A4A';active.style.color='white';}
+  renderShowingsModal();
+}
+function renderShowingsModal(){
+  const agentIdx=getUserAgentIdx();
+  let data=ALL_SHOWINGS.filter(s=>s.agent===agentIdx);
+  if(showingsFilter!=='all')data=data.filter(s=>s.status===showingsFilter);
+  document.getElementById('showingsModalList').innerHTML=data.length?data.map(s=>`
+    <div class="list-row">
+      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1B2A4A">${s.address}</div><div style="font-size:11px;color:#94A3B8">${s.buyer}</div></div>
+      <div style="text-align:right"><div style="font-size:12px;color:#1B2A4A;font-weight:500">${s.datetime}</div><span class="badge ${s.status==='confirmed'?'badge-live':s.status==='cancelled'?'badge-warn':'badge-intake'}">${s.status}</span></div>
+    </div>`).join(''):'<div style="padding:20px;text-align:center;font-size:12px;color:#94A3B8">No showings found</div>';
+}
+function setMarketView(v){
+  marketView=v;
+  document.getElementById('marketGrid').style.display=v==='grid'?'grid':'none';
+  document.getElementById('marketMap').style.display=v==='map'?'block':'none';
+  document.getElementById('viewGridBtn').classList.toggle('btn-navy',v==='grid');
+  document.getElementById('viewMapBtn').classList.toggle('btn-navy',v==='map');
+}
+function openLink(url){window.open(url,'_blank');}
+// ============================================================
+// TOAST NOTIFICATION SYSTEM
+// ============================================================
+function showToast(message,type='success'){
+  let container=document.getElementById('toastContainer');
+  if(!container){
+    container=document.createElement('div');
+    container.id='toastContainer';
+    container.style.cssText='position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px';
+    document.body.appendChild(container);
+  }
+  const colors={success:'#10B981',error:'#EF4444',info:'#028090',warning:'#F97316'};
+  const icons={success:'✓',error:'✕',info:'ℹ',warning:'⚠'};
+  const toast=document.createElement('div');
+  toast.style.cssText=`background:${colors[type]||colors.success};color:white;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(0,0,0,.2);display:flex;align-items:center;gap:8px;min-width:260px;max-width:360px`;
+  toast.innerHTML=`<span style="font-size:16px">${icons[type]||icons.success}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(()=>{
+    toast.style.opacity='0';
+    toast.style.transition='opacity .3s ease';
+    setTimeout(()=>toast.remove(),300);
+  },3000);
+}
+</script>
+</body>
+</html>
