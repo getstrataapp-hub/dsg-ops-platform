@@ -353,7 +353,7 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
       <div style="display:flex;gap:10px;align-items:center">
         <input class="search-input" placeholder="Search by address..." style="width:220px" oninput="filterListings(this.value)"/>
         <button class="btn" id="expiringBtn" onclick="toggleExpiring()">⏱ Expiring Soon</button>
-        <button class="btn btn-teal">+ Add New</button>
+        <button class="btn btn-teal" onclick="openAddListingModal()">+ Add New</button>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:200px 1fr;gap:24px">
@@ -369,7 +369,7 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
             <div style="padding:5px 0;border-bottom:1px solid #F1F5F9">Follow up seller disclosure — 360 Ocean</div>
             <div style="padding:5px 0">MLS correction needed — 4280 Ingraham</div>
           </div>
-          <button class="btn btn-sm" style="width:100%;margin-top:10px">+ Add Note</button>
+          <button class="btn btn-sm" style="width:100%;margin-top:10px" onclick="showToast('Add Note coming in Phase 2','info')">+ Add Note</button>
         </div>
       </div>
       <div>
@@ -394,7 +394,7 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
       </div>
       <div style="display:flex;gap:10px;align-items:center">
         <input class="search-input" placeholder="Search by address..." style="width:220px"/>
-        <button class="btn btn-teal">+ Add New</button>
+        <button class="btn btn-teal" onclick="openAddTransactionModal()">+ Add New</button>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:200px 1fr;gap:24px">
@@ -411,9 +411,9 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
     <div class="page-header">
       <div class="page-title">Commissions</div>
       <div style="display:flex;gap:10px">
-        <button class="btn btn-sm">📊 Reports</button>
-        <button class="btn btn-sm">⬇ Export</button>
-        <button class="btn btn-teal btn-sm">+ Add Manual</button>
+        <button class="btn btn-sm" onclick="showToast('Reports coming in Phase 2','info')">📊 Reports</button>
+        <button class="btn btn-sm" onclick="showToast('Exporting...','info')">⬇ Export</button>
+        <button class="btn btn-teal btn-sm" onclick="showToast('Add Manual coming in Phase 2','info')">+ Add Manual</button>
       </div>
     </div>
     <div class="grid-4" style="margin-bottom:24px">
@@ -435,7 +435,7 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
         <div class="page-title">New Construction</div>
         <div class="page-sub">3 active projects</div>
       </div>
-      <button class="btn btn-teal">+ Add Project</button>
+      <button class="btn btn-teal" onclick="showToast('Add Project coming in Phase 2','info')">+ Add Project</button>
     </div>
     <div class="grid-4" style="margin-bottom:24px">
       <div class="stat-card"><div class="stat-label">Total Projects</div><div class="stat-value">3</div></div>
@@ -545,7 +545,7 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
         <select class="btn btn-sm"><option>All Properties</option><option>Single Family</option><option>Condo</option></select>
         <select class="btn btn-sm"><option>Any Beds</option><option>2+</option><option>3+</option><option>4+</option><option>5+</option></select>
         <select class="btn btn-sm"><option>Any Baths</option><option>2+</option><option>3+</option><option>4+</option></select>
-        <button class="btn btn-sm" style="margin-left:auto">Reset</button>
+        <button class="btn btn-sm" style="margin-left:auto" onclick="document.getElementById('calcStart').value=new Date().toISOString().split('T')[0];document.getElementById('calcDays').value='';showToast('Reset','info')">Reset</button>
       </div>
     </div>
     <div id="marketGrid" class="grid-3" style="margin-bottom:16px"></div>
@@ -566,7 +566,7 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
         <button class="btn" onclick="openLink('https://realtor.com')">🔍 Realtor.com ↗</button>
         <button class="btn" onclick="openLink('https://redfin.com')">🔍 Redfin ↗</button>
         <button class="btn" onclick="openLink('https://loopnet.com')">🔍 LoopNet ↗</button>
-        <button class="btn btn-teal btn-sm">+ Add Link</button>
+        <button class="btn btn-teal btn-sm" onclick="showToast('Add Link coming in Phase 2','info')">+ Add Link</button>
       </div>
     </div>
   </div>
@@ -931,7 +931,7 @@ function buildListingDetail(id){
         <div style="display:flex;align-items:center;gap:10px">
           <span class="badge ${statusBadge(l.status)}" style="font-size:12px;padding:5px 14px">${statusLabel(l.status)}</span>
           <span style="font-size:17px;font-weight:700;color:var(--teal)">${l.progress}%</span>
-          <button class="btn btn-teal btn-sm">+ Add New</button>
+          <button class="btn btn-teal btn-sm" onclick="showToast('Use the Listings page to add new listings','info')">+ Add New</button>
         </div>
       </div>
       <div class="prog-wrap" style="height:6px;margin-top:14px"><div class="prog-fill" style="width:${l.progress}%;height:6px"></div></div>
@@ -947,7 +947,7 @@ function buildListingDetail(id){
             <div style="display:flex;align-items:center;gap:10px"><span>📞</span><span style="font-size:13px;color:#1B2A4A">(305) 555-1234</span></div>
             <div style="display:flex;align-items:center;gap:10px"><span>✉️</span><span style="font-size:13px;color:#1B2A4A">j.martinez@email.com</span></div>
           </div>
-          <button class="btn btn-sm" style="margin-top:10px">+ Add Owner</button>
+          <button class="btn btn-sm" style="margin-top:10px" onclick="showToast('Add Owner coming in Phase 2','info')">+ Add Owner</button>
         </div>
         <!-- PROPERTY DETAILS -->
         <div class="card card-pad">
@@ -956,14 +956,15 @@ function buildListingDetail(id){
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
             ${[['Beds',l.beds],['Baths',l.baths],['Type',l.type],['HOA','$350/mo']].map(([k,v])=>`<div><div style="font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.3px">${k}</div><div style="font-size:14px;font-weight:600;color:#1B2A4A">${v}</div></div>`).join('')}
           </div>
-          <button class="btn" style="width:100%;margin-top:12px;font-size:12px">More Details →</button>
+          <button class="btn" style="width:100%;margin-top:12px;font-size:12px" onclick="showToast('Editable flyer coming in Phase 2','info')">More Details →</button>
         </div>
         <!-- PHOTOS -->
         <div class="card card-pad">
           <div class="section-hdr">Photos</div>
           <div style="font-size:12px;color:#94A3B8;margin-bottom:10px">Upload directly or paste Dropbox/Google Drive link</div>
-          <button class="btn btn-sm" style="margin-right:6px">Upload Photos</button>
-          <button class="btn btn-sm">Paste Link</button>
+          <button class="btn btn-sm" style="margin-right:6px" onclick="document.getElementById('photoUploadInput').click()">Upload Photos</button>
+          <input type="file" id="photoUploadInput" accept="image/*" multiple style="display:none" onchange="showToast('Photos uploaded successfully','success')"/>
+          <button class="btn btn-sm" onclick="const url=prompt('Enter Dropbox or Google Drive link:');if(url)showToast('Link saved','success')">Paste Link</button>
         </div>
         <!-- REQUIREMENTS -->
         <div class="req-card">
@@ -982,13 +983,13 @@ function buildListingDetail(id){
           </div>
           <div class="prog-wrap" style="height:5px;margin-bottom:14px"><div class="prog-fill" style="width:${phaseProg(activePhase)}%;height:5px"></div></div>
           <div id="taskList">${buildTaskList(activePhase)}</div>
-          <button class="btn btn-sm" style="margin-top:10px">+ Add Task</button>
+          <button class="btn btn-sm" style="margin-top:10px" onclick="showToast('Add Task coming in Phase 2','info')">+ Add Task</button>
         </div>
         <!-- SHOWINGS -->
         <div class="card card-pad">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
             <div class="section-hdr" style="margin:0">Showings</div>
-            <button class="btn btn-teal btn-sm">+ Add Showing</button>
+            <button class="btn btn-teal btn-sm" onclick="showToast('Add Showing coming in Phase 2','info')">+ Add Showing</button>
           </div>
           ${[['Marcus Rivera','mrivera@compass.com','Apr 25 · 2:00 PM','confirmed'],['Sarah Chen','schen@onesy.com','Apr 26 · 10:30 AM','pending']].map(([ag,em,dt,st])=>`
           <div class="list-row">
@@ -1000,7 +1001,7 @@ function buildListingDetail(id){
         <div class="card card-pad">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
             <div class="section-hdr" style="margin:0">Open House &amp; Brokers Open</div>
-            <button class="btn btn-teal btn-sm">+ Add Event</button>
+            <button class="btn btn-teal btn-sm" onclick="showToast('Add Event coming in Phase 2','info')">+ Add Event</button>
           </div>
           <div class="list-row">
             <span class="badge badge-onboarding">Brokers Open</span>
@@ -1015,15 +1016,15 @@ function buildListingDetail(id){
         <div class="card card-pad">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
             <div class="section-hdr" style="margin:0">Documents</div>
-            <button class="btn btn-teal btn-sm">+ Upload Files</button>
+            <button class="btn btn-teal btn-sm" onclick="showToast('Upload Files coming in Phase 2','info')">+ Upload Files</button>
           </div>
           ${[['Listing Agreement — Executed.pdf','1.37 MB','Apr 15'],['Property Questionnaire.pdf','12.8 MB','Apr 16'],['Tax Roll & Ownership.pdf','1.2 MB','Apr 16']].map(([n,s,d])=>`
           <div class="list-row">
             <span style="font-size:22px">📄</span>
             <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1B2A4A">${n}</div><div style="font-size:11px;color:#94A3B8">${s} · ${d}</div></div>
             <div style="display:flex;gap:6px">
-              <button class="btn btn-sm" style="font-size:11px">↗</button>
-              <button class="btn btn-sm" style="font-size:11px">↓</button>
+              <button class="btn btn-sm" style="font-size:11px" onclick="showToast('Opening document...','info')">↗</button>
+              <button class="btn btn-sm" style="font-size:11px" onclick="showToast('Downloading document...','info')">↓</button>
             </div>
           </div>`).join('')}
         </div>
