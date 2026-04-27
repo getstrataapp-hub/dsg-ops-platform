@@ -10,7 +10,7 @@
 body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-height:100vh}
 :root{--navy:#1B2A4A;--teal:#028090;--silver:#C0C8D0;--border:#E2E8F0;--green:#10B981;--amber:#F59E0B;--orange:#F97316;--red:#EF4444;--gray:#6B7280}
 /* NAV */
-.nav{background:var(--navy);height:56px;display:flex;align-items:center;padding:0 20px;gap:4px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.15);overflow-x:auto}
+.nav{background:var(--navy);height:56px;display:flex;align-items:center;padding:0 20px;gap:4px;position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(0,0,0,0.15);overflow-x:auto}
 .nav-logo{display:flex;align-items:center;gap:10px;margin-right:20px;flex-shrink:0}
 .nav-logo-box{width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center}
 .nav-logo-text{color:white;font-size:13px;font-weight:700;letter-spacing:.5px;white-space:nowrap}
@@ -200,16 +200,11 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
 <div id="loginScreen">
   <div class="login-wrap">
     <div class="login-card">
-      <div class="login-logo">
-        <div class="login-logo-icon">
-          <div style="background:#1B2A4A"></div>
-          <div style="background:#028090"></div>
-          <div style="background:#028090"></div>
-          <div style="background:#1B2A4A"></div>
+<div class="login-logo">
+          <!-- DSG LOGO: Replace src with actual path when deploying -->
+          <img src="David_Siddons_Group_Logo_Final_white_vector.png" alt="DSG Logo" style="width:180px;margin:0 auto 12px;display:block"/>
+          <div style="font-size:11px;color:#94A3B8;letter-spacing:2px;text-transform:uppercase;margin-top:3px">Operations System</div>
         </div>
-        <div style="font-family:'DM Serif Display',serif;font-size:20px;color:#1B2A4A;letter-spacing:.5px">DAVID SIDDONS GROUP</div>
-        <div style="font-size:11px;color:#94A3B8;letter-spacing:2px;text-transform:uppercase;margin-top:3px">Operations System</div>
-      </div>
       <h2 class="login-title">Welcome back</h2>
       <p class="login-sub">Sign in to your operations dashboard</p>
       <label class="form-label">Email Address</label>
@@ -217,11 +212,13 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
       <label class="form-label">Password</label>
       <input class="form-input" value="••••••••" type="password"/>
       <div class="forgot">Forgot password?</div>
-      <button class="btn-login" onclick="doLogin()">Sign In to DSG Operations</button>
+     <div id="loginError" style="color:#EF4444;font-size:12px;margin-bottom:8px;min-height:16px;text-align:center"></div>
+<button class="btn-login" onclick="doLogin()">Sign In to DSG Operations</button>
       <div style="text-align:center;margin-top:16px;font-size:12px;color:#94A3B8">Secure access — David Siddons Group team only</div>
     </div>
     <div class="login-team-photo">
-      <img src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=420&h=120&fit=crop" alt="DSG Team"/>
+      <!-- TEAM PHOTO -->
+<img src="grad_team_png.webp" alt="DSG Team"/>
     </div>
     <div class="login-footer">www.luxlifemiamiblog.com &nbsp;·&nbsp; (305) 508-0899 &nbsp;·&nbsp; 1515 Sunset Dr, Coral Gables FL</div>
   </div>
@@ -253,7 +250,8 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
     <button class="nav-btn" onclick="showPage('market',this)">Market</button>
     <div class="nav-right">
       <span class="nav-date" id="navDate"></span>
-      <div class="nav-bell">🔔<span class="nav-bell-badge">3</span></div>
+     <div class="nav-bell" onclick="toggleBellPanel()" style="position:relative">🔔<span class="nav-bell-badge" id="bellBadge">3</span></div>
+
       <div class="nav-user">
         <div class="avatar" style="width:24px;height:24px;font-size:9px;background:#059669">AC</div>
         <span class="nav-user-name">Andrea</span>
@@ -261,6 +259,13 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
       </div>
     </div>
   </nav>
+  <div id="bellPanel" style="display:none;position:fixed;top:60px;right:20px;width:320px;background:white;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:200;max-height:400px;overflow-y:auto">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #E2E8F0">
+    <span style="font-size:13px;font-weight:700;color:#1B2A4A">Notifications</span>
+    <button class="btn btn-sm" onclick="markAllRead()">Mark all read</button>
+  </div>
+  <div id="bellList"></div>
+</div>
 
   <!-- DASHBOARD -->
   <div id="page-dashboard" class="page active">
@@ -573,19 +578,20 @@ body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#2C3E50;min-heigh
 // DATA
 // ============================================================
 const AGENTS=[
-  {name:'David Siddons',initials:'DS',color:'#1B2A4A',role:'Boss'},
-  {name:'Elaine Tatum',initials:'ET',color:'#028090',role:'Agent'},
-  {name:'Jorge Salazar',initials:'JS',color:'#7C3AED',role:'Agent'},
-  {name:'Shakira Sanchez',initials:'SS',color:'#DB2777',role:'Agent'},
-  {name:'Stefania Cambarau',initials:'SC',color:'#D97706',role:'Agent'},
-  {name:'Cris Buzolin',initials:'CB',color:'#059669',role:'Ops Director'},
+  {id:0,name:'David Siddons',initials:'DS',color:'#1B2A4A',email:'david@siddonsgroup.com',role:'boss'},
+  {id:1,name:'Elaine Tatum',initials:'ET',color:'#7C3AED',email:'elaine@siddonsgroup.com',role:'agent'},
+  {id:2,name:'Jorge Salazar',initials:'JS',color:'#0369A1',email:'jorge@siddonsgroup.com',role:'agent'},
+  {id:3,name:'Shakira Siddons',initials:'SS',color:'#BE185D',email:'shakira@siddonsgroup.com',role:'agent'},
+  {id:4,name:'Stefania Cambarau',initials:'SC',color:'#B45309',email:'stefania@siddonsgroup.com',role:'agent'},
+  {id:5,name:'Cris Barros',initials:'CB',color:'#059669',email:'cris@siddonsgroup.com',role:'cris'},
 ];
+const ADMIN_USER={id:99,name:'Andrea',initials:'AC',color:'#059669',email:'andrea@siddonsgroup.com',role:'admin',password:'DSGMiami2026!'};
 const LISTINGS=[
   {id:1,mls:'A11234567',address:'5545 SW 81st Ter',neighborhood:'Ponce-Davis, Coral Gables',price:22000000,sc:3,bc:2.5,expires:5,status:'live',progress:85,agent:0,beds:7,baths:8,type:'Single Family',photo:'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=500&h=220&fit=crop'},
-  {id:2,mls:'A11345678',address:'6371 SW 107 St',neighborhood:'Pinecrest',price:13999999,sc:2.5,bc:2.5,expires:9,status:'build',progress:55,agent:1,beds:7,baths:8.5,type:'Single Family',photo:'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=500&h=220&fit=crop'},
-  {id:3,mls:'A11456789',address:'4280 Ingraham Hwy',neighborhood:'Coconut Grove',price:12500000,sc:3,bc:3,expires:14,status:'onboarding',progress:30,agent:2,beds:8,baths:9.5,type:'Single Family',photo:'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=500&h=220&fit=crop'},
-  {id:4,mls:'A11567890',address:'360 Ocean Dr #1401',neighborhood:'South Beach',price:5780000,sc:3,bc:2.5,expires:47,status:'live',progress:92,agent:3,beds:4,baths:3.5,type:'Condo',photo:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=220&fit=crop'},
-  {id:5,mls:'A11678901',address:'1643 Brickell Ave #1504',neighborhood:'Brickell',price:2950000,sc:2.5,bc:2.5,expires:27,status:'intake',progress:12,agent:4,beds:3,baths:3,type:'Condo',photo:'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=500&h=220&fit=crop'},
+  {id:2,mls:'A11345678',address:'6371 SW 107 St',neighborhood:'Pinecrest',price:13999999,sc:2.5,bc:2.5,expires:9,status:'build',progress:55,agent:0,beds:7,baths:8.5,type:'Single Family',photo:'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=500&h=220&fit=crop'},
+  {id:3,mls:'A11456789',address:'4280 Ingraham Hwy',neighborhood:'Coconut Grove',price:12500000,sc:3,bc:3,expires:14,status:'onboarding',progress:30,agent:0,beds:8,baths:9.5,type:'Single Family',photo:'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=500&h=220&fit=crop'},
+  {id:4,mls:'A11567890',address:'360 Ocean Dr #1401',neighborhood:'South Beach',price:5780000,sc:3,bc:2.5,expires:47,status:'live',progress:92,agent:0,beds:4,baths:3.5,type:'Condo',photo:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=220&fit=crop'},
+  {id:5,mls:'A11678901',address:'1643 Brickell Ave #1504',neighborhood:'Brickell',price:2950000,sc:2.5,bc:2.5,expires:27,status:'intake',progress:12,agent:0,beds:3,baths:3,type:'Condo',photo:'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=500&h=220&fit=crop'},
 ];
 const TRANSACTIONS=[
   {id:1,mls:'A11234567',address:'2100 S Ocean Blvd #15A',neighborhood:'Fort Lauderdale',price:660000,sc:3.08,closing:2,status:'hard-contract',progress:78,agent:1,type:'Condo',deal:'Cash',rep:'Buyer',photo:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500&h=220&fit=crop'},
@@ -631,6 +637,32 @@ const COMM_DATA={
   closed:COMMISSIONS.filter(c=>c.status==='closed'),
   paid:COMMISSIONS.filter(c=>c.status==='paid'),
 };
+// ============================================================
+// USER SESSION & ROLES
+// ============================================================
+let currentUser=null;
+let teamMode=false;
+
+const USERS_DB=[
+  {id:0,name:'David Siddons',initials:'DS',color:'#1B2A4A',email:'david@siddonsgroup.com',role:'boss',password:'DSGMiami2026!',agentIdx:0},
+  {id:5,name:'Cris Barros',initials:'CB',color:'#059669',email:'cris@siddonsgroup.com',role:'cris',password:'DSGMiami2026!',agentIdx:5},
+  {id:99,name:'Andrea',initials:'AC',color:'#059669',email:'andrea@siddonsgroup.com',role:'admin',password:'DSGMiami2026!',agentIdx:null},
+];
+
+function getUserAgentIdx(){
+  if(!currentUser)return 0;
+  if(currentUser.role==='admin'||currentUser.role==='boss') return 0;
+  if(currentUser.role==='cris') return teamMode?0:5;
+  return currentUser.agentIdx;
+}
+
+function canEdit(){
+  return currentUser&&currentUser.role==='admin';
+}
+
+function isTeamMode(){
+  return teamMode||(currentUser&&(currentUser.role==='admin'||currentUser.role==='boss'));
+}
 let activeCommTab='active';
 let activePhase=0;
 let selectedListingId=1;
@@ -652,6 +684,23 @@ function avatar(ag,size=32){return`<div class="avatar" style="width:${size}px;he
 // LOGIN
 // ============================================================
 function doLogin(){
+  const emailEl=document.querySelector('#loginScreen input[type="email"]');
+  const passEl=document.querySelector('#loginScreen input[type="password"]');
+  const email=(emailEl?emailEl.value:'').trim().toLowerCase();
+  const pass=passEl?passEl.value:'';
+  const errEl=document.getElementById('loginError');
+
+  if(!email.endsWith('@siddonsgroup.com')){
+    if(errEl)errEl.textContent='Only @siddonsgroup.com emails are allowed.';
+    return;
+  }
+  const user=USERS_DB.find(u=>u.email===email&&u.password===pass);
+  if(!user){
+    if(errEl)errEl.textContent='Invalid email or password.';
+    return;
+  }
+  currentUser=user;
+  teamMode=false;
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('mainApp').style.display='block';
   initAll();
@@ -674,6 +723,8 @@ function showPage(id,btn){
 function initAll(){
   document.getElementById('navDate').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   document.getElementById('calcStart').value=new Date().toISOString().split('T')[0];
+  applyNavRoles();
+  updateNavUser();
   buildDashboard();
   buildListings();
   buildTransactions();
@@ -684,33 +735,92 @@ function initAll(){
   buildMarket();
 }
 
+function applyNavRoles(){
+  const role=currentUser?currentUser.role:'agent';
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    if(btn.textContent.trim()==='My Team'){
+      btn.style.display=(role==='admin'||role==='boss'||role==='cris')?'':'none';
+    }
+  });
+}
+
+function updateNavUser(){
+  if(!currentUser)return;
+  const u=currentUser;
+  document.querySelector('.nav-user-name').textContent=u.name.split(' ')[0];
+  document.querySelector('.nav-user-role').textContent=
+    u.role==='admin'?'Admin':u.role==='boss'?'Boss':u.role==='cris'?'Ops Director':'Agent';
+  document.querySelector('.nav-user .avatar').textContent=u.initials;
+  document.querySelector('.nav-user .avatar').style.background=u.color;
+}
+
 // ============================================================
 // DASHBOARD
 // ============================================================
 function buildDashboard(){
-  // Expirations
-  const sorted=[...LISTINGS].sort((a,b)=>a.expires-b.expires);
-  document.getElementById('dashExpirations').innerHTML=sorted.map(l=>`
+  const agentIdx=getUserAgentIdx();
+  const u=currentUser;
+  const role=u?u.role:'agent';
+
+  const firstName=role==='admin'?'Andrea':u.name.split(' ')[0];
+  document.querySelector('#page-dashboard .page-title').textContent='Good morning, '+firstName+' \uD83D\uDC4B';
+
+  let existing=document.getElementById('teamModeBtn');
+  if(existing)existing.remove();
+  if(role==='admin'||role==='cris'){
+    const btn=document.createElement('button');
+    btn.id='teamModeBtn';
+    btn.className='btn btn-sm';
+    btn.style.cssText='margin-left:12px;background:'+(teamMode?'#1B2A4A':'white')+';color:'+(teamMode?'white':'#1B2A4A');
+    btn.textContent=role==='admin'?(teamMode?'👥 Team Mode ON':'👤 David Mode'):(teamMode?'👤 Viewing: David':'👤 My Data');
+    btn.onclick=toggleTeamMode;
+    document.querySelector('#page-dashboard .page-header').appendChild(btn);
+  }
+
+  const myListings=LISTINGS.filter(l=>l.agent===agentIdx);
+  const sorted=[...myListings].sort((a,b)=>a.expires-b.expires);
+  const expCount=myListings.filter(l=>l.expires<=15).length;
+  document.querySelector('#page-dashboard .alert-banner span:last-child').textContent=
+    expCount>0?expCount+' listing'+(expCount>1?'s':'')+' expiring within 15 days':'No listings expiring soon';
+  document.getElementById('dashExpirations').innerHTML=sorted.length?sorted.map(l=>`
     <div class="list-row">
       <span class="dot ${dotCol(l.expires)}"></span>
       <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1B2A4A">${l.address}</div><div style="font-size:11px;color:#94A3B8">${AGENTS[l.agent].name}</div></div>
       <div style="text-align:right"><div style="font-size:13px;font-weight:700;color:${dayCol(l.expires)}">${l.expires}d</div><div style="font-size:10px;color:#94A3B8">expires</div></div>
-    </div>`).join('');
-  // Key dates
-  const kd=[['Inspection Due','2100 S Ocean Blvd',2],['1st Escrow','2114 Granada Blvd',5],['Closing Date','500 Brickell Key',7],['2nd Escrow','2100 S Ocean Blvd',12],['Commitment Letter','2114 Granada',18]];
-  document.getElementById('dashKeyDates').innerHTML=kd.map(([l,a,d])=>`
+    </div>`).join(''):'<div style="font-size:12px;color:#94A3B8;padding:8px 0">No listings</div>';
+
+  const myTx=TRANSACTIONS.filter(t=>t.agent===agentIdx);
+  const kdMap=myTx.map(t=>[['Closing Date',t.address,t.closing]]).flat();
+  document.getElementById('dashKeyDates').innerHTML=kdMap.length?kdMap.map(([l,a,d])=>`
     <div class="list-row">
       <div style="flex:1"><div style="font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.3px">${l}</div><div style="font-size:13px;font-weight:600;color:#1B2A4A">${a}</div></div>
       <div style="font-size:13px;font-weight:700;color:${dayCol(d)}">${d}d</div>
-    </div>`).join('');
-  // Showings
-  const sh=[['Marcus Rivera','5545 SW 81st Ter','Today · 2:00 PM','confirmed'],['Sarah Chen','360 Ocean Dr #1401','Tomorrow · 10:30 AM','pending'],['James Taylor','6371 SW 107 St','Apr 26 · 4:00 PM','confirmed']];
-  document.getElementById('dashShowings').innerHTML=sh.map(([ag,addr,dt,st])=>`
+    </div>`).join(''):'<div style="font-size:12px;color:#94A3B8;padding:8px 0">No upcoming key dates</div>';
+
+  const allShowings=[
+    {agent:0,buyer:'Marcus Rivera',address:'5545 SW 81st Ter',datetime:'Today · 2:00 PM',status:'confirmed'},
+    {agent:0,buyer:'Sarah Chen',address:'360 Ocean Dr #1401',datetime:'Tomorrow · 10:30 AM',status:'pending'},
+    {agent:0,buyer:'James Taylor',address:'6371 SW 107 St',datetime:'Apr 26 · 4:00 PM',status:'confirmed'},
+  ];
+  const myShowings=allShowings.filter(s=>s.agent===agentIdx);
+  document.getElementById('dashShowings').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <span style="font-size:12px;color:#64748B">${myShowings.length} showing${myShowings.length!==1?'s':''}</span>
+      <button class="btn btn-sm" onclick="openShowingsModal()">See All</button>
+    </div>`+
+    (myShowings.length?myShowings.map(s=>`
     <div class="list-row">
-      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1B2A4A">${addr}</div><div style="font-size:11px;color:#94A3B8">${ag}</div></div>
-      <div style="text-align:right"><div style="font-size:12px;color:#1B2A4A;font-weight:500">${dt}</div><span class="badge ${st==='confirmed'?'badge-live':'badge-intake'}">${st}</span></div>
-    </div>`).join('');
-  // Chart
+      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1B2A4A">${s.address}</div><div style="font-size:11px;color:#94A3B8">${s.buyer}</div></div>
+      <div style="text-align:right"><div style="font-size:12px;color:#1B2A4A;font-weight:500">${s.datetime}</div><span class="badge ${s.status==='confirmed'?'badge-live':s.status==='cancelled'?'badge-warn':'badge-intake'}">${s.status}</span></div>
+    </div>`).join(''):'<div style="font-size:12px;color:#94A3B8;padding:8px 0">No upcoming showings</div>');
+
+  const myVol=myListings.reduce((s,l)=>s+l.price,0);
+  const statCards=document.querySelectorAll('#page-dashboard .stat-card');
+  if(statCards[3]){
+    statCards[3].querySelector('.stat-label').textContent='ACTIVE LISTINGS SALES VOLUME';
+    statCards[3].querySelector('.stat-value').textContent=fmtK(myVol)||'$0';
+  }
+
   const maxGCI=Math.max(...REVENUE_DATA.map(d=>d.gci));
   document.getElementById('dashChart').innerHTML=REVENUE_DATA.map(d=>`
     <div class="chart-bar-wrap">
@@ -720,23 +830,32 @@ function buildDashboard(){
       </div>
       <div class="chart-label">${d.month}</div>
     </div>`).join('');
-  // Goals
+
+  const yearGCI=myListings.reduce((s,l)=>s+l.price*(l.sc/100),0)*12;
+  const goalTarget=500000;
+  const pct=Math.min(Math.round(yearGCI/goalTarget*100),100)||59;
+  const teamPct=78;
   document.getElementById('dashGoals').innerHTML=`
     <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:#64748B">Individual GCI Goal — $500K</span><span style="font-size:12px;font-weight:700;color:#F59E0B">59%</span></div>
-      <div class="prog-wrap" style="height:8px"><div class="prog-fill" style="width:59%;height:8px"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:#64748B">Individual GCI Goal — $500K</span><span style="font-size:12px;font-weight:700;color:#F59E0B">${pct}%</span></div>
+      <div class="prog-wrap" style="height:8px"><div class="prog-fill" style="width:${pct}%;height:8px"></div></div>
     </div>
     <div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:#64748B">Team Goal — $3M</span><span style="font-size:12px;font-weight:700;color:#10B981">78%</span></div>
-      <div class="prog-wrap" style="height:8px"><div class="prog-fill" style="width:78%;height:8px"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:#64748B">Team Goal — $3M</span><span style="font-size:12px;font-weight:700;color:#10B981">${teamPct}%</span></div>
+      <div class="prog-wrap" style="height:8px"><div class="prog-fill" style="width:${teamPct}%;height:8px"></div></div>
     </div>`;
+}
+
+function toggleTeamMode(){
+  teamMode=!teamMode;
+  buildDashboard();
 }
 
 // ============================================================
 // LISTINGS
 // ============================================================
 function buildListings(filter='',expiringFilter=false){
-  let data=[...LISTINGS];
+  let data=isTeamMode()?[...LISTINGS]:[...LISTINGS.filter(l=>l.agent===getUserAgentIdx())];
   if(filter)data=data.filter(l=>l.address.toLowerCase().includes(filter.toLowerCase()));
   if(expiringFilter)data=data.filter(l=>l.expires<=30);
   document.getElementById('listingsGrid').innerHTML=data.map(l=>propCard(l,'selectListing('+l.id+')')).join('');
@@ -940,7 +1059,8 @@ function toggleReq(i){
 // TRANSACTIONS
 // ============================================================
 function buildTransactions(){
-  document.getElementById('transactionsGrid').innerHTML=TRANSACTIONS.map(t=>{
+  const txData=isTeamMode()?TRANSACTIONS:TRANSACTIONS.filter(t=>t.agent===getUserAgentIdx());
+document.getElementById('transactionsGrid').innerHTML=txData.map(t=>{
     const isCash=t.deal==='Cash';
     return`<div class="prop-card">
       <div style="position:relative">
@@ -1133,36 +1253,92 @@ function calcDate(){
   res.innerHTML=`<div>📅 Result: <strong>${result.toLocaleDateString('en-US',opts)}</strong></div>${isWeekend?`<div style="margin-top:6px;font-size:12px;color:var(--teal)">⚡ Next business day: <strong>${nextBiz.toLocaleDateString('en-US',opts)}</strong></div>`:''}`;
   res.style.display='block';
 }
-function setCalcDays(d){document.getElementById('calcDays').value=d;}
-
 // ============================================================
-// MARKET
+// BELL NOTIFICATIONS
 // ============================================================
-function buildMarket(){
-  document.getElementById('marketGrid').innerHTML=LISTINGS.map(l=>`
-    <div class="prop-card">
-      <div style="position:relative">
-        <img class="prop-img" src="${l.photo}" alt="${l.address}" loading="lazy"/>
-        <div style="position:absolute;bottom:10px;right:10px;display:flex;gap:6px">
-          <button class="btn btn-navy btn-sm" style="opacity:.92;font-size:11px">👁 View Flyer</button>
-          <button class="btn btn-teal btn-sm" style="opacity:.92;font-size:11px">⬇ Download</button>
-        </div>
-      </div>
-      <div class="prop-body">
-        <div class="prop-address">${l.address}</div>
-        <div class="prop-neighborhood">${l.neighborhood}</div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <span class="prop-price" style="margin:0">${fmtK(l.price)}</span>
-          <div style="display:flex;gap:10px;font-size:12px;color:#64748B">
-            <span>🛏 ${l.beds}</span><span>🚿 ${l.baths}</span>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <div style="display:flex;align-items:center;gap:6px">${avatar(AGENTS[l.agent],22)}<span style="font-size:11px;color:#64748B">${AGENTS[l.agent].name}</span></div>
-          <span style="font-size:12px;color:#64748B;font-weight:600">Comm ${l.sc}%</span>
-        </div>
-      </div>
-    </div>`).join('');
+const NOTIFICATIONS=[
+  {id:1,text:'5545 SW 81st Ter listing expires in 5 days',type:'urgent',dueDate:Date.now()+5*86400000,read:false},
+  {id:2,text:'Inspection due — 2100 S Ocean Blvd in 2 days',type:'urgent',dueDate:Date.now()+2*86400000,read:false},
+  {id:3,text:'Escrow deadline — 2114 Granada in 5 days',type:'warn',dueDate:Date.now()+5*86400000,read:false},
+];
+function getActiveNotifications(){
+  const now=Date.now();
+  return NOTIFICATIONS.filter(n=>!n.read&&(now-n.dueDate)<86400000);
+}
+function toggleBellPanel(){
+  const p=document.getElementById('bellPanel');
+  const visible=p.style.display==='block';
+  p.style.display=visible?'none':'block';
+  if(!visible)renderBellList();
+}
+function renderBellList(){
+  const notifs=getActiveNotifications();
+  document.getElementById('bellBadge').textContent=notifs.length;
+  document.getElementById('bellBadge').style.display=notifs.length?'flex':'none';
+  const colors={urgent:'#FEE2E2',warn:'#FEF3C7',info:'#DBEAFE'};
+  const textColors={urgent:'#B91C1C',warn:'#92400E',info:'#1D4ED8'};
+  document.getElementById('bellList').innerHTML=notifs.length?notifs.map(n=>`
+    <div style="padding:12px 16px;border-bottom:1px solid #F1F5F9;background:${colors[n.type]||'#F8FAFC'}">
+      <div style="font-size:12px;font-weight:600;color:${textColors[n.type]||'#1B2A4A'};margin-bottom:2px">${n.text}</div>
+      <div style="font-size:11px;color:#94A3B8">${new Date(n.dueDate).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
+    </div>`).join(''):'<div style="padding:20px;text-align:center;font-size:12px;color:#94A3B8">No new notifications</div>';
+}
+function markAllRead(){
+  NOTIFICATIONS.forEach(n=>n.read=true);
+  renderBellList();
+  document.getElementById('bellPanel').style.display='none';
+}
+document.addEventListener('click',function(e){
+  const panel=document.getElementById('bellPanel');
+  const bell=document.querySelector('.nav-bell');
+  if(panel&&bell&&!panel.contains(e.target)&&!bell.contains(e.target)){
+    panel.style.display='none';
+  }
+});
+// ============================================================
+// SHOWINGS MODAL
+// ============================================================
+let showingsFilter='all';
+const ALL_SHOWINGS=[
+  {agent:0,buyer:'Marcus Rivera',address:'5545 SW 81st Ter',datetime:'Today · 2:00 PM',status:'confirmed'},
+  {agent:0,buyer:'Sarah Chen',address:'360 Ocean Dr #1401',datetime:'Tomorrow · 10:30 AM',status:'pending'},
+  {agent:0,buyer:'James Taylor',address:'6371 SW 107 St',datetime:'Apr 26 · 4:00 PM',status:'confirmed'},
+];
+function openShowingsModal(){
+  const m=document.getElementById('showingsModal');
+  m.style.display='flex';
+  showingsFilter='all';
+  ['sfAll','sfConfirmed','sfPending','sfCancelled'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.style.background='white';el.style.color='#1B2A4A';}
+  });
+  const allBtn=document.getElementById('sfAll');
+  if(allBtn){allBtn.style.background='#1B2A4A';allBtn.style.color='white';}
+  renderShowingsModal();
+}
+function closeShowingsModal(){
+  document.getElementById('showingsModal').style.display='none';
+}
+function filterShowings(f){
+  showingsFilter=f;
+  ['sfAll','sfConfirmed','sfPending','sfCancelled'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.style.background='white';el.style.color='#1B2A4A';}
+  });
+  const map={all:'sfAll',confirmed:'sfConfirmed',pending:'sfPending',cancelled:'sfCancelled'};
+  const active=document.getElementById(map[f]);
+  if(active){active.style.background='#1B2A4A';active.style.color='white';}
+  renderShowingsModal();
+}
+function renderShowingsModal(){
+  const agentIdx=getUserAgentIdx();
+  let data=ALL_SHOWINGS.filter(s=>s.agent===agentIdx);
+  if(showingsFilter!=='all')data=data.filter(s=>s.status===showingsFilter);
+  document.getElementById('showingsModalList').innerHTML=data.length?data.map(s=>`
+    <div class="list-row">
+      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1B2A4A">${s.address}</div><div style="font-size:11px;color:#94A3B8">${s.buyer}</div></div>
+      <div style="text-align:right"><div style="font-size:12px;color:#1B2A4A;font-weight:500">${s.datetime}</div><span class="badge ${s.status==='confirmed'?'badge-live':s.status==='cancelled'?'badge-warn':'badge-intake'}">${s.status}</span></div>
+    </div>`).join(''):'<div style="padding:20px;text-align:center;font-size:12px;color:#94A3B8">No showings found</div>';
 }
 function setMarketView(v){
   marketView=v;
@@ -1172,6 +1348,29 @@ function setMarketView(v){
   document.getElementById('viewMapBtn').classList.toggle('btn-navy',v==='map');
 }
 function openLink(url){window.open(url,'_blank');}
+// ============================================================
+// TOAST NOTIFICATION SYSTEM
+// ============================================================
+function showToast(message,type='success'){
+  let container=document.getElementById('toastContainer');
+  if(!container){
+    container=document.createElement('div');
+    container.id='toastContainer';
+    container.style.cssText='position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px';
+    document.body.appendChild(container);
+  }
+  const colors={success:'#10B981',error:'#EF4444',info:'#028090',warning:'#F97316'};
+  const icons={success:'✓',error:'✕',info:'ℹ',warning:'⚠'};
+  const toast=document.createElement('div');
+  toast.style.cssText=`background:${colors[type]||colors.success};color:white;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(0,0,0,.2);display:flex;align-items:center;gap:8px;min-width:260px;max-width:360px`;
+  toast.innerHTML=`<span style="font-size:16px">${icons[type]||icons.success}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(()=>{
+    toast.style.opacity='0';
+    toast.style.transition='opacity .3s ease';
+    setTimeout(()=>toast.remove(),300);
+  },3000);
+}
 </script>
 </body>
 </html>
